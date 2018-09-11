@@ -8,7 +8,7 @@ zaxis_rotate_matrix = [cos(gamma), -sin(gamma), 0; sin(gamma), cos(gamma), 0; 0,
 
 rotate_matrix = xaxis_rotate_matrix * yaxis_rotate_matrix * zaxis_rotate_matrix;
 rotate_V = (rotate_matrix * V')';
-final_V = rotate_V + repmat(translation', 19105, 1)
+final_V = rotate_V + repmat(translation', 19105, 1);
 
 draw(F, final_V);
 
