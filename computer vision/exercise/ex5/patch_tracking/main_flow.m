@@ -20,4 +20,5 @@ colormap gray
 hold off
 imagesc(img)
 hold on
+axis equal
 quiver(-velx*5, -vely*5);
