@@ -48,7 +48,44 @@ for i=1:nPoints
     Ki(i, :) = a(:);
 end
 
+% svd decomposition and unstack E_s to get E
 
+[u_ki, s_ki, v_ki] = svd(Ki);
+
+E_s = zeros(9, 1);
+E_s(:) = v_ki(:, 9);
+E = reshape(E_s, 3,3);
+
+% svd decomposition of E
+
+[u_e, s_e, v_e] = svd(E);
+diaganal = diag(s_e);
+diaganal = sort(diaganal);
+sigma = 0.5 * (diaganal(2) + diaganal(3));
+
+% projection onto unit essential space
+Sigma = diag([1, 1, 0]);
+E_projection = u_e * Sigma * v_e';
+
+
+Rz_1 = [0, -1, 0; 1, 0, 0; 0, 0, 1];
+Rz_2 = [0, 1, 0; -1, 0, 0; 0, 0, 1];
+
+% there are 4 possible solution
+
+R_1 = u_e * Rz_1' * v_e';
+R_2 = u_e * Rz_2' * v_e';
+
+T_hat1 = u_e * Rz_1 * Sigma * u_e';
+T_hat2 = u_e * Rz_2 * Sigma * u_e';
+
+T_1 = [-T_hat1(2, 3), T_hat1(1, 3), -T_hat1(1, 2)]';
+T_2 = [-T_hat2(2, 3), T_hat2(1, 3), -T_hat2(1, 2)]';
+
+reconstruction(R_1, T_1, x1, y1, x2, y2, 12);
+reconstruction(R_1, T_2, x1, y1, x2, y2, 12);
+reconstruction(R_2, T_1, x1, y1, x2, y2, 12);
+reconstruction(R_2, T_2, x1, y1, x2, y2, 12);
 
     
 
