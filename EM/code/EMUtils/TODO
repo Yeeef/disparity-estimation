@@ -1,0 +1,11 @@
+todo:
+    ☐ 一些变化的变量放入类中
+    ☐ 常量放入config.py中
+    ☐ hist 初值也没必要通过均匀分布，可以先做一次简单的 maxmization()
+
+problem:
+    ☐ hist 还是会过大, hist要设的更多！否则概率太大了，正态分布根本无法匹敌
+    ☐ disparity的切分也不能更加细化了，已经到像素点的级别了
+    ☐ 也许是因为我的图片太模糊了？
+    ☐ 也导致 ideal_image 完全滑入 image1 的取值，连小数都基本看不到！
+    ☐ 一直收敛到一个局部值，下一次用 grund truth 的 disparity map 进行尝试
