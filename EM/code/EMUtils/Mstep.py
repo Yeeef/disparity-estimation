@@ -10,7 +10,8 @@ def update_one_pixel(index):
     numer = 0
     for k in range(NUM_INPUT):
         row, col = utils.map_1D_to_2D(index)
-        kth_row, kth_col = utils.map_ideal_to_kth(row, col, k, disparity_image)
+        disparity = depth_vec[r]
+        kth_row, kth_col = utils.map_ideal_to_kth_with_disparity(row, col, k, disparity)
         numer += I[k][kth_row, kth_col] * visibility_conf_mat[s][k]
         deno += visibility_conf_mat[s][k]
 
@@ -27,13 +28,23 @@ def update_y_ideal():
 def update_cov():
     deno = 0
     numer = 0
+    tmp_sum = 0
+    s_0 = 0
+    s_1 = 0
     for i in range(HEIGHT):
         for j in range(WIDTH):
-            index = utils.map_2D_to_1D(i, j)
             for k in range(NUM_INPUT):
                 r, s = utils.map_m_to_r_s(visible_state[i, j])
-                kth_row, kth_col = utils.map_ideal_to_kth(i, j, k, disparity_image)
+                disparity = depth_vec[r]
+                kth_row, kth_col = utils.map_ideal_to_kth_with_disparity(i, j, k, disparity)
                 tmp = I[k][kth_row, kth_col] - ideal_image[i, j]
+                # if s == 0:
+                #     s_0 += 1
+                # else:
+                #     s_1 += 1
+                # 
+                # if k == 1 and s == 0:
+                #     tmp_sum += tmp ** 2
                 numer += visibility_conf_mat[s][k] * (tmp ** 2)
                 deno += visibility_conf_mat[s][k]
     # if numer / deno > 10:
@@ -41,7 +52,12 @@ def update_cov():
     # else:
     #     covariance[0] = numer / deno
     covariance[0] = numer / deno
-    print(covariance[0])
+    # print(f"tmp_sum: {tmp_sum}")
+    # print(f"deno: {deno}")
+    # print(f"numer: {numer}")
+    # print(f"s_0: {s_0}")
+    # print(f"s_1: {s_1}")
+    print(f"covariance: {covariance[0]}")
 
 
 def is_in_color_bin(color, b, num_color_in_bin=num_color_in_bin):
@@ -59,7 +75,8 @@ def update_h_of_one_image(k):
         for i in range(HEIGHT):
             for j in range(WIDTH):
                 r, s = utils.map_m_to_r_s(visible_state[i, j])
-                kth_row, kth_col = utils.map_ideal_to_kth(i, j, k, disparity_image)
+                disparity = depth_vec[r]
+                kth_row, kth_col = utils.map_ideal_to_kth_with_disparity(i, j, k, disparity)
                 if is_in_color_bin(I[k][kth_row, kth_col], b) and visibility_conf_mat[s][k] == 0:
                     tmp += 1
         hist_mat[k, b] = tmp
@@ -68,7 +85,7 @@ def update_h_of_one_image(k):
     if sum(hist_mat[k]) == 0:
         hist_mat[k] = np.zeros([1, NUM_COLOR_BINS]) / NUM_COLOR_BINS
     else:
-        hist_mat[k] = hist_mat[k] / (sum(hist_mat[k]) * 10)  # 标准化
+        hist_mat[k] = hist_mat[k] / (sum(hist_mat[k]))  # 标准化
 
 
 def update_hist():

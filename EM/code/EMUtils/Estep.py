@@ -39,8 +39,11 @@ def update_bim_iterunit(i, m, k):
     ## 获得 visibility 配置
     conf_s = visibility_conf_mat[s]
     is_visible = conf_s[k]
+    disparity = depth_vec[r]
     row, col = utils.map_1D_to_2D(i)
-    kth_row, kth_col = utils.map_ideal_to_kth(row, col, k, disparity_image)
+    ## bug!!!!
+
+    kth_row, kth_col = utils.map_ideal_to_kth_with_disparity(row, col, k, disparity)
     if utils.is_out_image(kth_row, kth_col):
         if k == 1 and is_visible:
             return 0
@@ -83,15 +86,16 @@ def update_b():
             print("\r" + str(row), end="")
             ## break
 
-        r, s = utils.map_m_to_r_s(visible_state[row, col])
         for m in range(num_visible_state):
 
             #             print(f"[update_b]: i = {i}")
             update_bim(i, m)
+        ## 更新一行后立即归一化
+        b_mat[i] = b_mat[i] / sum(b_mat[i])
 
-    ## 归一化
-    for index in range(HEIGHT * WIDTH):
-        b_mat[index] = b_mat[index] / sum(b_mat[index])
+    # ## 归一化
+    # for index in range(HEIGHT * WIDTH):
+    #     b_mat[index] = b_mat[index] / sum(b_mat[index])
 
 
 def update_visible(b=b_mat):
@@ -100,6 +104,7 @@ def update_visible(b=b_mat):
             index = utils.map_2D_to_1D(i, j)
             max_index = np.argmax(b[index])
             visible_state[i, j] = max_index
+
             r, s = utils.map_m_to_r_s(max_index)
             disparity = depth_vec[r]
             is_visible = visibility_conf_mat[s][1]
@@ -112,6 +117,7 @@ def update_visible_expectation(b=b_mat):
             index = utils.map_2D_to_1D(i, j)
             disparity = 0
             visibility = 0
+
             for m in range(num_visible_state):
                 r, s = utils.map_m_to_r_s(m)
                 disparity += b[index, m] * depth_vec[r]
@@ -133,6 +139,7 @@ def update_visible_expectation(b=b_mat):
 def E_step():
     update_b()
     update_visible_expectation()
+    # update_visible()
 
 
 def free_energy():
@@ -141,8 +148,10 @@ def free_energy():
         for j in range(WIDTH):
             for k in range(NUM_INPUT):
                 for m in range(num_visible_state):
-                    kth_row, kth_col = utils.map_ideal_to_kth(i, j, k, disparity_image)
                     r, s = utils.map_m_to_r_s(visible_state[i, j])
+                    disparity = depth_vec[r]
+                    kth_row, kth_col = utils.map_ideal_to_kth_with_disparity(i, j, k, disparity)
+                    
                     conf_s = visibility_conf_mat[s]
                     is_visible = conf_s[k]
                     if is_visible:

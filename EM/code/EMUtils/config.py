@@ -2,30 +2,35 @@
 from PIL import Image
 import numpy as np
 
-DATA_PREFIX = "/Users/yee/Desktop/paper/EM/data/cones/"
+DATA_PREFIX = "/home/vradmin/Desktop/paper_work/EM/data/Aloe/"
+FACTOR = 9
 
 ## 读取图片和disparity map
-true_disparity_image = (
-    np.array(Image.open(DATA_PREFIX + "disp2_small.png")) / 9).astype(int)
-image1 = np.array(Image.open(
-    DATA_PREFIX + "im2_small.png").convert("L"), dtype='int64')
-image2 = np.array(Image.open(
-    DATA_PREFIX + "im6_small.png").convert("L"), dtype='int64')
+# true_disparity_image = (
+#     np.array(Image.open(DATA_PREFIX + "disp2_small.png")) / FACTOR).astype(int)
+# image1 = np.array(Image.open(
+#     DATA_PREFIX + "im2_small.png").convert("L"), dtype='int64')
+# image2 = np.array(Image.open(
+#     DATA_PREFIX + "im6_small.png").convert("L"), dtype='int64')
+
+true_disparity_image = np.array(Image.open(DATA_PREFIX + "disp1.png")).astype(int)
+image1 = np.array(Image.open(DATA_PREFIX + "view1.png").convert("L"), dtype='int64')
+image2 = np.array(Image.open(DATA_PREFIX + "view5.png").convert("L"), dtype='int64')
 
 #############################
 """ basic params """
 
 NUM_INPUT = 2
-HEIGHT = 125
-WIDTH = 150
+HEIGHT = 370
+WIDTH = 427
 NUM_COLOR = 2  # 灰度图
 
 # 32 种 color bins(0,1,2,3,4,5,6,7 是第一个bin), 灰度图的 scale 0 - 255
 NUM_COLOR_BINS = 256
 num_color_in_bin = 256 / NUM_COLOR_BINS
-C = 10 ** (-4)  # in the psi function(potential function)
-sigma_d = 300
-sigma_v = 30
+C = 10 ** (-10)  # in the psi function(potential function)
+sigma_d = 10000
+sigma_v = 3000
 
 ###############################
 """ visible variables """
@@ -63,7 +68,7 @@ hist_mat = np.ones([NUM_INPUT, NUM_COLOR_BINS]) / NUM_COLOR_BINS
 
 ## 灰度图相当于一个一维分布, 不能随意初始化，否则会导致正太分布的概率过于小
 ## 没有办法的办法，即便我在别的模块中饮用 config, 其实获得的也是copy, 导致 covariance 无法更新
-covariance = [5]
+covariance = [10]
 ###############################
 
 
@@ -72,6 +77,7 @@ covariance = [5]
 b_mat = np.zeros([HEIGHT * WIDTH, num_visible_state])
 visible_state = np.zeros([HEIGHT, WIDTH])
 disparity_image = np.zeros([HEIGHT, WIDTH])
+disparity_image = true_disparity_image.copy()
 visible_image = np.zeros([HEIGHT, WIDTH])
 
 

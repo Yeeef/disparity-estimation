@@ -1,5 +1,45 @@
 from EMUtils.config import *
 import math
+import numpy as np
+
+
+def init_param_with_truth():
+    for i in range(HEIGHT * WIDTH):
+        row, col = map_1D_to_2D(i)
+        disparity = disparity_image[row, col]
+        if disparity == 0:
+            disparity = np.random.randint(1, 20)
+        r = depth_vec.index(disparity)
+        s = 0
+        m = map_r_s_to_m(r, s)
+        b_mat[i, m] = 1
+        # for s in range(NUM_VISIBLE_CONF):
+        #     m = map_r_s_to_m(r, s)
+        #     is_visible = visibility_conf_mat[s][1]
+        #     kth_row, kth_col = row, col - disparity
+
+        #     if is_visible:
+        #         if is_out_image(kth_row, kth_col):
+        #             color_prob = 0
+        #         else:
+        #             color_prob = norm_pdf(
+        #                 I[1][kth_row, kth_col], ideal_image[row, col], covariance[0])
+        #     else:
+        #         if is_out_image(kth_row, kth_col):
+        #             color_prob = 1
+        #         else:
+        #             color_prob = hist_prob(1, I[1][kth_row, kth_col])
+
+        #     b_mat[i, m] = color_prob
+        b_mat[i] = b_mat[i] / sum(b_mat[i])
+    for i in range(HEIGHT):
+        for j in range(WIDTH):
+            index = map_2D_to_1D(i, j)
+            max_index = np.argmax(b_mat[index])
+            visible_state[i, j] = max_index
+            r, s = map_m_to_r_s(max_index)
+            is_visible = visibility_conf_mat[s][1]
+            visible_image[i, j] = is_visible
 
 
 def init_param():
@@ -22,7 +62,7 @@ def init_param():
                         I[1][kth_row, kth_col], ideal_image[row, col], covariance[0])
             else:
                 if is_out_image(kth_row, kth_col):
-                    color_prob = 100
+                    color_prob = 1
                 else:
                     color_prob = hist_prob(1, I[1][kth_row, kth_col])
 
@@ -41,13 +81,20 @@ def init_param():
             disparity_image[i, j] = disparity
             visible_image[i, j] = is_visible
 
+    # disparity_image = true_disparity_image.copy()
 
-def map_ideal_to_kth(i, j, k, disparity_image):
+
+def map_ideal_to_kth_with_disparity(row, col, k, disparity):
     if k == 0:
-        return int(i), int(j)
+        return row, col
     else:
-        disp = disparity_image[i, j]
-        return int(i), int(j - disp)
+        return row, col - disparity
+# def map_ideal_to_kth(i, j, k, disparity_image):
+#     if k == 0:
+#         return int(i), int(j)
+#     else:
+#         disp = disparity_image[i, j]
+#         return int(i), int(j - disp)
 
 ## @param i: row(0 ~ HEIGHT - 1)
 ## @param j: col(0 ~ WIDTH - 1)
