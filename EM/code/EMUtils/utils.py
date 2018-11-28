@@ -56,19 +56,23 @@ def init_param():
 
             if is_visible:
                 if is_out_image(kth_row, kth_col):
-                    color_prob = 0
+                    color_prob = 0.0001
                 else:
                     color_prob = norm_pdf(
                         I[1][kth_row, kth_col], ideal_image[row, col], covariance[0])
             else:
-                if is_out_image(kth_row, kth_col):
-                    color_prob = 1
-                else:
-                    color_prob = hist_prob(1, I[1][kth_row, kth_col])
+                color_prob = hist_prob(0, I[0][row, col])
+                # if is_out_image(kth_row, kth_col):
+                #     color_prob = 1
+                # else:
+                #     color_prob = hist_prob(1, I[1][kth_row, kth_col])
 
             b_mat[i, m] = color_prob
         ## 归一化
-        b_mat[i] = b_mat[i] / sum(b_mat[i])
+        if sum(b_mat[i]) > 0:
+            b_mat[i] = b_mat[i] / sum(b_mat[i])
+        else:
+            b_mat[i] = [1 / num_visible_state for _ in range(num_visible_state)]
 
     for i in range(HEIGHT):
         for j in range(WIDTH):

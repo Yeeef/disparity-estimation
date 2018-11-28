@@ -10,6 +10,7 @@ class EM(object):
         utils.init_param()
         self.iter = 0
         self.save_dir = save_dir
+        # print(f"free energy: {Estep.free_energy()}")
 
     def estimation(self):
         Estep.E_step()
@@ -23,6 +24,8 @@ class EM(object):
         self.maxmization()
         print(f"\n {self.iter} M step finished")
         self.save_fig()
+        # print(f"free energy: {Estep.free_energy()}")
+        
         print(f"\n {self.iter} save fig successfully in {self.save_dir}")
         self.iter += 1
 

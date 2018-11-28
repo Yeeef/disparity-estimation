@@ -46,7 +46,7 @@ def update_bim_iterunit(i, m, k):
     kth_row, kth_col = utils.map_ideal_to_kth_with_disparity(row, col, k, disparity)
     if utils.is_out_image(kth_row, kth_col):
         if k == 1 and is_visible:
-            return 0
+            return 0.0001
         else:
             return 1
     if is_visible:
@@ -91,7 +91,10 @@ def update_b():
             #             print(f"[update_b]: i = {i}")
             update_bim(i, m)
         ## 更新一行后立即归一化
-        b_mat[i] = b_mat[i] / sum(b_mat[i])
+        if sum(b_mat[i]) > 0:
+            b_mat[i] = b_mat[i] / sum(b_mat[i])
+        else:
+            b_mat[i] = [1 / num_visible_state for _ in range(num_visible_state)]
 
     # ## 归一化
     # for index in range(HEIGHT * WIDTH):
@@ -123,11 +126,12 @@ def update_visible_expectation(b=b_mat):
                 disparity += b[index, m] * depth_vec[r]
                 visibility += b[index, m] * visibility_conf_mat[s][1]
             
-            disparity_image[i, j] = disparity
+            
             
             nearest_disparity = utils.nearest_int(disparity)
             nearest_visibility = utils.nearest_int(visibility)
             visible_image[i, j] = nearest_visibility
+            disparity_image[i, j] = nearest_disparity
             new_r = depth_vec.index(nearest_disparity)
             if nearest_visibility == 1:
                 new_s = 0
@@ -138,8 +142,8 @@ def update_visible_expectation(b=b_mat):
 
 def E_step():
     update_b()
-    update_visible_expectation()
-    # update_visible()
+    # update_visible_expectation()
+    update_visible()
 
 
 def free_energy():
@@ -160,8 +164,17 @@ def free_energy():
                     else:
                         prob = utils.hist_prob(k, I[k][kth_row, kth_col])
 
-                    sum1 += b_mat[utils.map_2D_to_1D(i, j), m] * prob
+                    sum1 += b_mat[utils.map_2D_to_1D(i, j), m] * math.log(prob)
     print(f"sum1: {sum1}")
+    
+    sum3 = 0
+    for row in range(HEIGHT):
+        for col in range(WIDTH):
+            index = utils.map_2D_to_1D(row, col)
+            for m in range(num_visible_state):
+                sum3 += b_mat[index, m] * math.log(b_mat[index, m])
+    print(f"sum3: {sum3}")
+
     sum2 = 0
     for row in range(HEIGHT):
         for col in range(WIDTH):
@@ -172,11 +185,5 @@ def free_energy():
                         sum2 += b_mat[index, m] * b_mat[j, n] * \
                             math.log(psi_mn(m, n, C))
     print(f"sum2: {sum2}")
-    sum3 = 0
-    for row in range(HEIGHT):
-        for col in range(WIDTH):
-            index = utils.map_2D_to_1D(row, col)
-            for m in range(num_visible_state):
-                sum3 += b_mat[index, m] * math.log(b_mat[index, m])
-    print(f"sum3: {sum3}")
+    
     return -sum1 - sum2 + sum3
