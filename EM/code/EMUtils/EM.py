@@ -7,6 +7,8 @@ import os
 class EM(object):
     def __init__(self, save_dir):
         # utils.init_param_with_truth()
+        if not os.path.exists(save_dir):
+            print(f"cannot find path: {save_dir}")
         utils.init_param()
         self.iter = 0
         self.save_dir = save_dir
