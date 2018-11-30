@@ -1,25 +1,28 @@
 
 from PIL import Image
 import numpy as np
+import os
 
 # DATA_PREFIX = "/home/vradmin/Desktop/paper_work/EM/data/cones/"
 # DATA_PREFIX = "/home/vradmin/Desktop/paper_work/EM/data/Aloe/"
-DATA_PREFIX = "/Users/yee/Desktop/paper_work/EM/data/Aloe/"
+# DATA_PREFIX = "/Users/yee/Desktop/paper_work/EM/data/Aloe/"
+DATA_PREFIX = "C:\\Learn\\grade3\\paper_work\\EM\\data\\Aloe"
 # DATA_PREFIX = "/Users/yee/Desktop/paper_work/EM/data/cones/"
+# DATA_PREFIX = "C:\\Learn\\grade3\\paper_work\\EM\\data\\cones"
 
-FACTOR = 9
+FACTOR = 3
 
 ## 读取图片和disparity map
 # true_disparity_image = (
-#     np.array(Image.open(DATA_PREFIX + "disp2_small.png")) / FACTOR).astype(int)
+#     np.array(Image.open(os.path.join(DATA_PREFIX, "disp2.png"))) / FACTOR).astype(int)
 # image1 = np.array(Image.open(
-#     DATA_PREFIX + "im2_small.png").convert("L"), dtype='int64')
+#     os.path.join(DATA_PREFIX, "im2.png")).convert("L"), dtype='int64')
 # image2 = np.array(Image.open(
-#     DATA_PREFIX + "im6_small.png").convert("L"), dtype='int64')
+#     os.path.join(DATA_PREFIX, "im6.png")).convert("L"), dtype='int64')
 
-true_disparity_image = np.array(Image.open(DATA_PREFIX + "disp1.png")).astype(int)
-image1 = np.array(Image.open(DATA_PREFIX + "view1_small.png").convert("L"), dtype='int64')
-image2 = np.array(Image.open(DATA_PREFIX + "view5_small.png").convert("L"), dtype='int64')
+true_disparity_image = np.array(Image.open(os.path.join(DATA_PREFIX, "disp1.png"))).astype(int)
+image1 = np.array(Image.open(os.path.join(DATA_PREFIX, "view1_small.png")).convert("L"), dtype='int64')
+image2 = np.array(Image.open(os.path.join(DATA_PREFIX, "view5_small.png")).convert("L"), dtype='int64')
 
 #############################
 """ basic params """
@@ -30,23 +33,23 @@ WIDTH = image1.shape[1]
 NUM_COLOR = 2  # 灰度图
 
 # 32 种 color bins(0,1,2,3,4,5,6,7 是第一个bin), 灰度图的 scale 0 - 255
-NUM_COLOR_BINS = 256
+NUM_COLOR_BINS = 128
 num_color_in_bin = 256 / NUM_COLOR_BINS
 C = 10 ** (-5)  # in the psi function(potential function)
 sigma_d = 0.3
-sigma_v = 0.1
+sigma_v = 1
 
 ###############################
 """ visible variables """
 
-NUM_VISIBLE_CONF = 1 # S
-NUM_DEPTH_LEVEL = 24  # R depth level
+NUM_VISIBLE_CONF = 2 # S
+NUM_DEPTH_LEVEL = 72  # R depth level
 num_visible_state = NUM_VISIBLE_CONF * \
     NUM_DEPTH_LEVEL  # M = R * S 从 0 开始 m = r * S + s
 
 ## visibility configuration matrix
-# visibility_conf_mat = np.array([[1, 1], [1, 0]])
-visibility_conf_mat = np.array([[1, 1]])
+visibility_conf_mat = np.array([[1, 1], [1, 0]])
+# visibility_conf_mat = np.array([[1, 1]])
 
 ## depth value for each level
 depth_vec = [i for i in range(NUM_DEPTH_LEVEL)]

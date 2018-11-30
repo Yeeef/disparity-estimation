@@ -4,6 +4,8 @@ todo:
     ☐ 对 cone aloe 都做一版更加可以接受的结果，现在貌似没有特别好的收敛
     ☐ occlusion的也要逐渐加入
     ☐ 自己写一个 config 文件，读取config 文件，便于调参
+    ☐ ground truth 测试 与 刚体测试
+    ☐ 在一定循环之后，采用期望更新
 
 problem:
     ☐ hist 还是会过大, hist要设的更多！否则概率太大了，正态分布根本无法匹敌
@@ -17,6 +19,7 @@ problem:
       可以根据 ground truth 的信息求出来一个 covariance 的初值
       利用ground truth 算一个 b_mat 初值？
       为什么
+    ☐ sigma_v = 0.1, colorbin = 128 会出现非常极端的结果 
         
         
 

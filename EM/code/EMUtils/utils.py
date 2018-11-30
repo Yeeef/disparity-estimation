@@ -61,11 +61,11 @@ def init_param():
                     color_prob = norm_pdf(
                         I[1][kth_row, kth_col], ideal_image[row, col], covariance[0])
             else:
-                color_prob = hist_prob(0, I[0][row, col])
-                # if is_out_image(kth_row, kth_col):
-                #     color_prob = 1
-                # else:
-                #     color_prob = hist_prob(1, I[1][kth_row, kth_col])
+                # color_prob = hist_prob(1, I[0][row, col])
+                if is_out_image(kth_row, kth_col):
+                    color_prob = hist_prob(0, I[0][row, col])
+                else:
+                    color_prob = hist_prob(1, I[1][kth_row, kth_col])
 
             b_mat[i, m] = color_prob
         ## 归一化
