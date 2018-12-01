@@ -1,0 +1,41 @@
+todo:
+    ✔ 一些变化的变量放入类中 @done(18-11-28 22:31)
+    ✔ 常量放入config.py中 @done(18-11-28 22:31)
+    ✔ 对 cone aloe 都做一版更加可以接受的结果，现在貌似没有特别好的收敛 @done(18-12-01 15:16)
+    ✔ occlusion的也要逐渐加入 @done(18-12-01 15:16)
+    ✔ 自己写一个 config 文件，读取config 文件，便于调参 @done(18-12-01 15:16)
+    ☐ ground truth 测试 与 刚体测试
+    ☐ 在一定循环之后，采用期望更新
+
+problem:
+    ☐ hist 还是会过大, hist要设的更多！否则概率太大了，正态分布根本无法匹敌
+    ☐ disparity的切分也不能更加细化了，已经到像素点的级别了
+    ☐ 也许是因为我的图片太模糊了？
+    ☐ 也导致 ideal_image 完全滑入 image1 的取值，连小数都基本看不到！
+    ☐ 一直收敛到一个局部值，下一次用 grund truth 的 disparity map 进行尝试
+      非常奇特，不做em的时候，反而不会使 covariance 飞出去，
+            因为初值的ML太具有功利性！打印值之后可以发现减去 disparity 几乎没有任何差别！ 
+            所以现在决定增强平滑性的要求，增强之后用处也不大。。。
+      可以根据 ground truth 的信息求出来一个 covariance 的初值
+      利用ground truth 算一个 b_mat 初值？
+      为什么
+    ☐ sigma_v = 0.1, colorbin = 128 会出现非常极端的结果 
+        
+        
+
+fault:        
+    发现一个重大错误，在更新 bim 的过程中，我完全没有利用 r 的信息，而是利用disparity map
+    更新 bim 的式子中出现很多错误了
+    又发现一个bug，如果一些点我都看不见，为啥要用第二张图的点来算概率呢？
+
+
+
+仅仅利用depth, 就假定所有点都看得见，会是什么样子, 稍微好一点点
+自己推一遍公式，公式没问题
+重新看一遍代码
+每次都打印自由能，利用 expectation 方法，自由能没有下降
+换一张图片, 需要裁剪图片, 然后缩小图片进行测试，换了 aloe
+
+
+achievement:
+    ✔ aloe dataset, without occlusion, argmax method, sigma_d = 0.3 @done(18-11-28 22:32)

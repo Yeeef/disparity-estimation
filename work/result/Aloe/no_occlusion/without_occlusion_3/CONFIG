@@ -1,0 +1,19 @@
+## FAIL
+## expecation method
+
+
+DATA_PREFIX = /Users/yee/Desktop/paper_work/EM/data/Aloe/
+
+MODE = small
+
+NUM_COLOR_BINS = 256
+
+C = 10 ^ -10  # in the psi function(potential function)
+
+sigma_d = 30
+
+sigma_v = 3
+
+OCCLUSION = 0
+
+COVARIANCE = 10
