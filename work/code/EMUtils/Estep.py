@@ -118,7 +118,7 @@ def update_b():
     # for index in range(HEIGHT * WIDTH):
     #     b_mat[index] = b_mat[index] / sum(b_mat[index])
 
-    
+# @TODO: 在一定步数之后改为expectation 
 def update_visible(b=b_mat):
     for i in range(HEIGHT):
         for j in range(WIDTH):
@@ -155,7 +155,6 @@ def update_visible_expectation(b=b_mat):
                 new_s = 0
             else:
                 new_s = 1
-            
             visible_state[i, j] = utils.map_r_s_to_m(new_r, new_s)
 
 def E_step():

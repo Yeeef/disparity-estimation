@@ -23,7 +23,7 @@ class EM(object):
 
     def estimation(self):
         # Estep.E_step()
-        EstepFast.E_step_fast()
+        EstepFast.E_step_fast(self.iter)
     
     def maxmization(self):
         # Mstep.M_step()

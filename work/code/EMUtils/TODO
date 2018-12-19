@@ -5,7 +5,10 @@ todo:
     ✔ occlusion的也要逐渐加入 @done(18-12-01 15:16)
     ✔ 自己写一个 config 文件，读取config 文件，便于调参 @done(18-12-01 15:16)
     ☐ ground truth 测试 与 刚体测试
-    ☐ 在一定循环之后，采用期望更新
+      multiscale, 给大图一个更好的初始点
+    加入occlusion之后，disparity 无法恢复到更好的地方
+    移植代码，转入 opencv, 加快速度
+    ☐ 在一定循环之后，采用期望更新, 不太好
 
 problem:
     ☐ hist 还是会过大, hist要设的更多！否则概率太大了，正态分布根本无法匹敌

@@ -145,10 +145,19 @@ def update_visible_expectation(b=b_mat):
             
             visible_state[i, j] = utils.map_r_s_to_m(new_r, new_s)
 
-def E_step_fast():
+# 在 iter 步之后开始进行 期望取值，加强平滑性
+def update_visible(iter, b=b_mat):
+    if iter >=100:
+        update_visible_expectation()
+    else:
+        update_visible_argmax_fast()
+
+def E_step_fast(iter):
     update_b_fast()
     # update_visible_expectation()
-    update_visible_argmax_fast()
+    update_visible(iter)
+    # update_visible_argmax_fast()
+
 
 
 def free_energy():

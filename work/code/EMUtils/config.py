@@ -3,7 +3,7 @@ import numpy as np
 import os
 import re
 
-CONFIG_PATH = "/Users/yee/Desktop/paper_work/EM/result/Aloe/test4/CONFIG"
+CONFIG_PATH = "/home/vradmin/Desktop/paper_work/work/result/Aloe/test/CONFIG"
 
 ## 读取图片和disparity map
 # true_disparity_image = (
