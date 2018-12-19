@@ -9,6 +9,13 @@ review of linear algebra:
 
 EM:
     ✔ 完成第一篇论文观看 @done(18-09-23 18:47)
-    ☐ 与威哥讨论项目进展流程，开始严格按照流程进行规划
-    ☐ Markov network
-    ☐ several questions
+    ✔ 与威哥讨论项目进展流程，开始严格按照流程进行规划 @done(18-12-14 19:36)
+    ✔ Markov network @done(18-12-14 19:36)
+    ✔ several questions @done(18-12-14 19:36)
+    ☐ 暂时搁置
+        ☐ ground truth
+        ☐ patch match 给一个更好的初值
+
+SuperResolution:
+    ☐ 阅读论文
+    ☐ 熟悉 tensorpack
