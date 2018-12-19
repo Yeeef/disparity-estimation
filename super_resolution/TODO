@@ -1,7 +1,19 @@
 12.14 - 12.21:
     ☐ 详细阅读论文
+        ✔ L1, L2 loss @done(18-12-19 17:29)
+        ☐ rank loss
+        ☐ multiscale (CNN) 与 superresolution 什么关系?
+        ☐ stereo image pairs
+        ✔ unpooling @done(18-12-19 17:30)
+        ☐ strided conv layer
+        ☐ skip connection
+        ☐ side-input and side-output
+        ☐ scale invariant
+        ☐ 整理以前的资料,重新复习 CNN的相关知识
+    
     ☐ skip connection
-    ☐ ResNet
+    ☐ down sampling and up sampling
+    ✔ 大致熟悉 ResNet @done(18-12-19 17:30)
     ☐ 熟悉 `tensorpack`
         ☐ vgg 16
         ☐ ResNet
