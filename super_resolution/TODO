@@ -2,20 +2,40 @@
     ☐ 详细阅读论文
         ✔ L1, L2 loss @done(18-12-19 17:29)
         ✔ rank loss @done(18-12-20 20:29)
-        ☐ multiscale (CNN) 与 superresolution 什么关系?
+        ✔ multiscale (CNN) 与 superresolution 什么关系? @done(18-12-21 18:24)
         ✔ stereo image pairs @done(18-12-20 20:23)
         ✔ unpooling @done(18-12-19 17:30)
-        ☐ strided conv layer
-        ☐ skip connection
-        ☐ side-input and side-output
-        ☐ scale invariant
+        ✔ strided conv layer @done(18-12-21 18:24)
+        ✔ skip connection @done(18-12-21 18:24)
+        ✔ side-input and side-output @done(18-12-21 18:24)
+        ✔ scale invariant @done(18-12-21 18:24)
 
     ✔ 整理以前的资料,重新复习 CNN的相关知识 @done(18-12-20 22:42)
-    ☐ skip connection
-    ☐ 了解 multi scale
+    ✔ skip connection @done(18-12-21 18:24)
+    ✔ 了解 multi scale @done(18-12-21 18:24)
     ✔ 了解BN @done(18-12-20 20:55)
     ✔ down sampling and up sampling @done(18-12-20 20:24)
     ✔ 大致熟悉 ResNet @done(18-12-19 17:30)
     ☐ 熟悉 `tensorpack`
+        ✔ vgg 16 @done(18-12-21 18:24)
+        ☐ ResNet
+
+12.22 - 12.27:
+    ☐ low-priority
+        ☐ 了解 FPN
+        ☐ 了解 refinenet
+        ☐ deconv & conv2D transpose
+    ☐ NYU 数据集准备 (CC)
+    ☐ 服务器环境搭建
+        ✔ tensorflow-gpu @done(18-12-21 19:29)
+        ☐ 远程访问 jupyter-notebook
+        ☐ team-viewer
+        ☐ 如何利用服务器集群?
+    ☐ 继续熟悉 tensorpack
+        ☐ MNIST 熟悉基本 API
         ☐ vgg 16
         ☐ ResNet
+    ☐ 想清楚网络结构
+        ☐ 画出设计图
+        ☐ 代码实现
+    

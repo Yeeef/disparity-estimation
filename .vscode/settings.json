@@ -1,6 +1,6 @@
 {
     "python.formatting.provider": "autopep8",
-    "python.pythonPath": "/home/vradmin/anaconda3/bin/python",
+    "python.pythonPath": "/home/vradmin/anaconda3/envs/yee/bin/python",
     "python.linting.pylintEnabled": false,
     // "python.linting.pylintEnabled": false
 }
