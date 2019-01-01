@@ -35,7 +35,6 @@
         ☐ MNIST 熟悉基本 API
         ☐ vgg 16
         ☐ ResNet
-<<<<<<< HEAD
     ☐ FPN
     ☐ 数据集准备
     ☐ refine net
@@ -46,9 +45,7 @@
     ☐ skip connection
     ☐ mulitiscale 
     ☐ 数据收集，NYU 上小测试
-=======
     ☐ 想清楚网络结构
         ☐ 画出设计图
         ☐ 代码实现
     
->>>>>>> d7535ca5a819a381841c96f4072e517d64392895
