@@ -19,3 +19,13 @@
     ☐ 熟悉 `tensorpack`
         ☐ vgg 16
         ☐ ResNet
+    ☐ FPN
+    ☐ 数据集准备
+    ☐ refine net
+    ☐ conv2D transpose
+    ☐ 上采样插值即可,不需要用 unpooling
+    ☐ strided conv 也可以替换为 下采样 + 卷积
+    ☐ down sample 利用 opencv
+    ☐ skip connection
+    ☐ mulitiscale 
+    ☐ 数据收集，NYU 上小测试
