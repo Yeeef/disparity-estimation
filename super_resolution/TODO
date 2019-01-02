@@ -25,6 +25,12 @@
         ☐ 了解 FPN
         ☐ 了解 refinenet
         ☐ deconv & conv2D transpose
+    ☐ 论文阅读
+        ✔ ResNet @done(19-01-02 11:09)
+        ✔ vgg @done(19-01-02 11:09)
+        ☐ BatchNormalization
+        ☐ Group Normalization
+        ☐ Going deeper with convolution
     ☐ NYU 数据集准备 (CC)
     ☐ 服务器环境搭建
         ✔ tensorflow-gpu @done(18-12-21 19:29)
@@ -32,20 +38,18 @@
         ☐ team-viewer
         ☐ 如何利用服务器集群?
     ☐ 继续熟悉 tensorpack
-        ☐ MNIST 熟悉基本 API
+        ✔ MNIST 熟悉基本 API @done(19-01-02 11:08)
         ☐ vgg 16
         ☐ ResNet
-    ☐ FPN
-    ☐ 数据集准备
-    ☐ refine net
-    ☐ conv2D transpose
+    ☐ 想清楚网络结构
+        ☐ 画出设计图
+        ☐ 代码实现
+    
     ☐ 上采样插值即可,不需要用 unpooling
     ☐ strided conv 也可以替换为 下采样 + 卷积
     ☐ down sample 利用 opencv
     ☐ skip connection
     ☐ mulitiscale 
     ☐ 数据收集，NYU 上小测试
-    ☐ 想清楚网络结构
-        ☐ 画出设计图
-        ☐ 代码实现
+    
     
