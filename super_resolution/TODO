@@ -31,6 +31,7 @@
         ☐ BatchNormalization
         ☐ Group Normalization
         ☐ Going deeper with convolution
+        ☐ scale augmentation in resnet
     ☐ NYU 数据集准备 (CC)
     ☐ 服务器环境搭建
         ✔ tensorflow-gpu @done(18-12-21 19:29)
@@ -39,7 +40,7 @@
         ☐ 如何利用服务器集群?
     ☐ 继续熟悉 tensorpack
         ✔ MNIST 熟悉基本 API @done(19-01-02 11:08)
-        ☐ vgg 16
+        ✔ vgg 16 @done(19-01-03 22:34)
         ☐ ResNet
     ☐ 想清楚网络结构
         ☐ 画出设计图

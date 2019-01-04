@@ -65,3 +65,26 @@ Please make sure that
 path 的初始定义在 `/etc/enviroment` 中
  
 dkkg -i 安装包才好使
+
+## vgg16
+
+### imagenet_utils
+
+- `image_preprocess` 中 `mean`, `std` 值哪里来的？
+- `variance_scaling_initializer` 是啥玩意？
+- 为何全连接层用 `tf.random_normal_initializer` 作为初始化？
+- what is `fbresnet_augmentor`
+- `tower` 的含义不是很理解
+- `ClassificationError` 中用了 `wrong-top1` 之前也定义了，`wrong-top1` 会不会造成冲突 / 冗余？
+- `StagingInput` 啥玩意？
+
+backbone: resnet
+FPN
+skip connection 对称
+
+NYU
+
+SYNTHIA 总共差不多 10w 张
+
+L1(huber loss)
+L2
