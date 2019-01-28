@@ -1,6 +1,6 @@
 {
     "python.formatting.provider": "autopep8",
-    "python.pythonPath": "/anaconda3/envs/TFLearn/bin/python",
+    "python.pythonPath": "/home/vradmin/anaconda3/bin/python",
     "python.linting.pylintEnabled": false,
     // "python.linting.pylintEnabled": false
 }

@@ -5,7 +5,7 @@ import tensorflow as tf
 from datetime import datetime
  
 device_name="/cpu:0"
-# device_name="/gpu:0"
+#device_name="/gpu:0"
  
 shape=(int(10000),int(10000))
  

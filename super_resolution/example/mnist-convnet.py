@@ -63,7 +63,7 @@ class Model(ModelDesc):
             wd_cost = tf.multiply(1e-5,
                                   regularize_cost('fc.*/W', tf.nn.l2_loss),
                                   name='regularize_cost')
-            
+            # 这里 add_n 其实只是为了保险? 之前 reduce_mean 的时候应该已经将cost 变成一个 scalar 了
             total_cost = tf.add_n([wd_cost, cost], name='total_cost')
             summary.add_moving_summary(cost, wd_cost, total_cost)
 
