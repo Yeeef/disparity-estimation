@@ -1,4 +1,0 @@
-[32m[0128 16:16:45 @logger.py:87][0m Argv: mnist-convnet.py
-[32m[0128 16:16:45 @fs.py:100][0m [5m[31mWRN[0m Env var $TENSORPACK_DATASET not set, using /home/vradmin/tensorpack_data for datasets.
-[32m[0128 16:16:45 @trainers.py:52][0m Building graph for a single training tower ...
-[32m[0128 16:16:45 @registry.py:121][0m conv0 input: [None, 28, 28, 1]
