@@ -28,6 +28,7 @@
     ☐ 论文阅读
         ✔ ResNet @done(19-01-02 11:09)
         ✔ vgg @done(19-01-02 11:09)
+        ✔ imagenet in 1 hour @done(19-01-28 20:49)
         ☐ BatchNormalization
         ☐ Group Normalization
         ☐ Going deeper with convolution
@@ -42,10 +43,21 @@
         ✔ MNIST 熟悉基本 API @done(19-01-02 11:08)
         ✔ vgg 16 @done(19-01-03 22:34)
         ☐ ResNet
+    ☐ warm up
+        ✔ mnist @done(19-01-28 15:58)
+        ✔ vgg @done(19-01-28 20:11)
+        ☐ resnet
     ☐ 想清楚网络结构
         ☐ 画出设计图
+        ☐ 技术细节
+            ☐ image preprocessing
+            ☐ augment
+            ☐ FPN
+            ☐ refinenet
+            ☐ skip connection
         ☐ 代码实现
     
+    ☐ augment 如何利用?
     ☐ 上采样插值即可,不需要用 unpooling
     ☐ strided conv 也可以替换为 下采样 + 卷积
     ☐ down sample 利用 opencv

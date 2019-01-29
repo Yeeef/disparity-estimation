@@ -65,7 +65,7 @@ class Model(ImageNetModel):
     def get_logits(self, image):
         with argscope(Conv2D, kernel_initializer=tf.variance_scaling_initializer(scale=2.)), \
                 argscope([Conv2D, MaxPooling, BatchNorm], data_format='channels_first'):
-                # 默认是 channel last
+                # 默认是 channel last NHWC, 现在是 NCHW
             logits = (LinearWrap(image)
                       .apply(convnormrelu, 'conv1_1', 64)
                       .apply(convnormrelu, 'conv1_2', 64)
