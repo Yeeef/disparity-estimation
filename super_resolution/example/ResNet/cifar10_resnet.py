@@ -50,10 +50,14 @@ class Model(ModelDesc):
         # channel first
         image = tf.transpose(image, [0, 3, 1, 2])
 
+        # residual block
         def residual(name, l, increase_dim=False, first=False):
             shape = l.get_shape().as_list()
+            # channel first NCHW
             in_channel = shape[1]
-
+            
+            # 是否增加维度(channel 的个数)
+            # it is for the strided conv layer
             if increase_dim:
                 out_channel = in_channel * 2
                 stride1 = 2
@@ -66,8 +70,11 @@ class Model(ModelDesc):
                 c1 = Conv2D('conv1', b1, out_channel,
                             strides=stride1, activation=BNReLU)
                 c2 = Conv2D('conv2', c1, out_channel)
+                # 一下是对 identity mapping 时 increase dim 做的操作
+                # l 的 channel 数怎么办? 通过 tf.pad 填充的
                 if increase_dim:
                     l = AvgPooling('pool', l, 2)
+                    
                     l = tf.pad(
                         l, [[0, 0], [in_channel // 2, in_channel // 2], [0, 0], [0, 0]])
 
@@ -94,6 +101,8 @@ class Model(ModelDesc):
             l = BNReLU('bnlast', l)
             # 8,c=64
             l = GlobalAvgPooling('gap', l)
+
+            # 8, c = 1
 
         logits = FullyConnected('linear', l, 10)
         tf.nn.softmax(logits, name='output')
