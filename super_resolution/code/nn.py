@@ -141,7 +141,7 @@ class Model(ModelDesc):
                 # pre-act
                 l = BNReLU(l)
                 # 512*H/8*W/8
-                side_output = Conv2D('multi_conv0', l, 1, kernel_size=1)
+                side_output0 = Conv2D('multi_conv0', l, 1, kernel_size=1)
 
                 # 512*H/4*W/4
                 l = resize_image(l, HEIGHT/4, WIDTH/4)
@@ -162,8 +162,9 @@ class Model(ModelDesc):
             with tf.variable_scope('up4.0'):
                 # pre-act
                 l = BNReLU(l)
-                # 256*H/4*W/4
-                side_output = Conv2D('multi_conv1', l, 1, kernel_size=1)
+
+                # b*1*H/4*W/4
+                side_output1 = Conv2D('multi_conv1', l, 1, kernel_size=1)
 
                 # 256*H/2*W/2
                 l = resize_image(l, HEIGHT/2, WIDTH/2)
@@ -185,7 +186,7 @@ class Model(ModelDesc):
                 # pre-act
                 l = BNReLU(l)
                 # 128*H/2*W/2
-                side_output = Conv2D('multi_conv1', l, 1, kernel_size=1)
+                side_output2 = Conv2D('multi_conv1', l, 1, kernel_size=1)
 
                 # 128*H*W
                 l = resize_image(l, HEIGHT, WIDTH)
@@ -198,12 +199,30 @@ class Model(ModelDesc):
                 output = Conv2D('output_conv', c2, 1, kernel_size=1, activation=BNReLU)
 
         batch_size, height, width = output.get_shape().as_list()[:3]
-        loss = get_loss(original_depth_map, tf.reshape(output, [batch_size, height, width]), name='loss')
+        # H/8*W/8
+        loss0 = get_loss(
+            resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT/8, WIDTH/8, 'channels_first'),
+            tf.reshape(side_output0, [batch_size, height, width]),
+            name='loss0'
+        )
+        loss1 = get_loss(
+            resize_image(tf.expand_dims(original_depth_map, 1),
+                         HEIGHT/4, WIDTH/4, 'channels_first'),
+            tf.reshape(side_output1, [batch_size, height, width]),
+            name='loss1'
+        )
+        loss2 = get_loss(
+            resize_image(tf.expand_dims(original_depth_map, 1),
+                         HEIGHT/2, WIDTH/2, 'channels_first'),
+            tf.reshape(side_output2, [batch_size, height, width]),
+            name='loss2'
+        )
+        loss_output = get_loss(original_depth_map, tf.reshape(output, [batch_size, height, width]), name='loss_output')
 
         add_moving_summary(loss)
         add_param_summary(('.*/W', ['histogram']))
 
-        return loss
+        return tf.add_n(loss0, loss1, loss2, loss_output, name='loss')
 
     def optimizer(self):
         lr = tf.get_variable('learning_rate', initializer=0.01, trainable=False)
