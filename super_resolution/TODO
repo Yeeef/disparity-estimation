@@ -46,15 +46,17 @@
     ☐ warm up
         ✔ mnist @done(19-01-28 15:58)
         ✔ vgg @done(19-01-28 20:11)
-        ☐ resnet
+        ✔ resnet @done(19-02-21 16:49)
     ☐ 想清楚网络结构
         ☐ 画出设计图
         ☐ 技术细节
             ☐ image preprocessing, mean, variance
             ☐ augment
+            ☐ bottleneck block
             ☐ FPN
             ☐ refinenet
             ☐ skip connection
+            ☐ 能否将 depth map 进行卷积，原图像做 side-input 来 enhance edge details
         ☐ 代码实现
     ☐ why first residual block don't need preactivation?
         ☐ I know, 就像论中中所说, preactivation 本质上还是一种 post-activation, 第一个卷基层的激活函数为 BNReLU, 所以第一个 res block 不需要 activation
