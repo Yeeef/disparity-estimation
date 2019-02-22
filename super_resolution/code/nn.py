@@ -8,6 +8,7 @@ backbone: resnet
 """
 
 from self_utils import *
+from data import *
 
 import argparse
 import os
@@ -17,12 +18,13 @@ from tensorpack import *
 from tensorpack.tfutils.summary import add_moving_summary, add_param_summary
 from tensorpack.utils.gpu import get_num_gpu
 
+
 import tensorflow as tf
 
 
 BATCH_SIZE = 128
-HEIGHT = 32
-WIDTH = 32
+HEIGHT = 640
+WIDTH = 480
 
 
 class Model(ModelDesc):
@@ -217,7 +219,11 @@ class Model(ModelDesc):
             tf.reshape(side_output2, [batch_size, height, width]),
             name='loss2'
         )
-        loss_output = get_loss(original_depth_map, tf.reshape(output, [batch_size, height, width]), name='loss_output')
+        loss_output = get_loss(
+            original_depth_map, 
+            tf.reshape(output, [batch_size, height, width]), 
+            name='loss_output'
+        )
 
         add_moving_summary(loss)
         add_param_summary(('.*/W', ['histogram']))
@@ -228,47 +234,37 @@ class Model(ModelDesc):
         lr = tf.get_variable('learning_rate', initializer=0.01, trainable=False)
         return tf.train.MomentumOptimizer(lr, 0.9)
 
-                                        
-
-            
-
-
-
-
-            
-
-
-                
-
-
-                
-                
-                
-
-                
-               
-            
-
-
-
-
-
-
-        
-
-
-
-
-        
-
-
-        
-
     def _preprocess_image():
         pass
-        
-    
 
+
+
+def get_data(train_or_test):
+    assert train_or_test in ['train', 'test']
+    is_train = (train_or_test == 'train')
+    ds = NYUBase(train_or_test)
+    img_mean, depth_mean = ds.get_per_pixel_mean()
+
+    if is_train:
+        augmentors = [
+            imgaug.RandomCrop(128),
+            imgaug.Flip(horiz=True),
+            imgaug.MapImage(lambda x: x - tf.concat(values=[img_mean, depth_mean], concat_dim=0))
+        ]
+    else:
+        augmentors = [
+            imgaug.MapImage(
+                lambda x: x - tf.concat(values=[img_mean, depth_mean], concat_dim=0))
+        ]
+    ds = AugmentImageComponent(ds, augmentors)
+    ds = BatchData(ds, BATCH_SIZE, remainder=not is_train)
+    if is_train:
+        ds = PrefetchData(ds, 3, 2)
+    return ds
+
+
+
+    
 if __name__ == "__main__":
     pass
 
