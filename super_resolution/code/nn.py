@@ -23,8 +23,8 @@ import tensorflow as tf
 
 
 BATCH_SIZE = 128
-HEIGHT = 640
-WIDTH = 480
+HEIGHT = 480
+WIDTH = 640
 
 
 class Model(ModelDesc):
@@ -34,23 +34,28 @@ class Model(ModelDesc):
         self.n = n
 
     def inputs(self):
-        return [tf.placeholder(tf.float32, [None, HEIGHT, WIDTH, 3], 'input_image'),
-                tf.placeholder(tf.float32, [None, HEIGTH, WIDTH], 'input_depthmap')]
+        return [tf.placeholder(tf.float32, [None, 4, HEIGHT, WIDTH], 'input_img_depth')]
 
-    def build_graph(self, image, depth_map):
-        # b * h * w * c
-        image = self._preprocess_image(image)
-        # b * h * w
-        original_depth_map = self._preprocess_image(depth_map)
-
+    def build_graph(self, img_depth):
         # b, c, h, w
-        image = tf.transpose(image, [0, 3, 1, 2])
+        image = img_depth[:, :3]
+        # b, h, w
+        original_depth_map = img_depth[:, 3]
+        # # b * h * w * c
+        # image = self._preprocess_image(image)
+        # # b * h * w
+        # original_depth_map = self._preprocess_image(depth_map)
+
+        # # b, c, h, w
+        # image = tf.transpose(image, [0, 3, 1, 2])
 
         # b, c, h, w
         # original_depth_map = tf.expand_dims(original_depth_map, 1)
 
-        depth_map = resize_image(depth_map, H/2, W/2, 'channels_last')
-        depth_map = tf.expand_dims(depth_map, 1)
+        # b, h, w, 1
+        depth_map = resize_image(tf.expand_dims(original_depth_map, 3), HEIGHT/2, WIDTH/2, 'channels_last')
+        # b, 1, h, w
+        depth_map = tf.transpose(depth_map, [0, 3, 1, 2])
         assert tf.test.is_gpu_available()
 
         

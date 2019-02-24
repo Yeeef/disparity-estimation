@@ -23,9 +23,10 @@ def read_NYU(filenames):
 
 class NYUBase(RNGDataFlow):
     """
-    produces [image, depth] in NYU dataset,
-    image is 3 * 640 * 480 in range [0, 255]
-    depth is 640 * 480 in range [0, 255]
+    produces [image concat depth] in NYU dataset,
+    image is 3 * 480 * 640 in range [0, 255]
+    depth is 480 * 640 in range [0, 255]
+    image concat depth is 4 * 480 * 640
     """
 
     def __init__(self, dir, train_or_test, shuffle=None):
@@ -70,11 +71,12 @@ class NYUBase(RNGDataFlow):
     def get_per_pixel_mean(self, names=('train', 'test')):
         # b, c, h, w
         all_imgs = np.array([x[:3] for x in self.data], dtype=np.float32)
+        # b, h, w
         all_depths = np.array([x[3] for x in self.data], dtype=np.float32)
         # 3, h, w
         img_mean = np.mean(all_imgs, axis=0)
         # 1, h, w
-        depth_mean = np.mean(all_depths, axis=0)
+        depth_mean = np.expand_dims(np.mean(all_depths, axis=0), 0)
 
         return (img_mean, depth_mean)
 
