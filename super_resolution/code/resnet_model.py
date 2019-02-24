@@ -8,6 +8,10 @@ from tensorpack.models import (
     Conv2D, MaxPooling, GlobalAvgPooling, BatchNorm, BNReLU, FullyConnected)
 
 
+__all__ = ['preresnet_basicblock', 'preresnet_bottleneck',
+           'preresnet_group', 'resnet_basicblock', 'resnet_bottleneck', 'resnet_group']
+
+
 def resnet_shortcut(l, n_out, stride, activation=tf.identity):
     data_format = get_arg_scope()['Conv2D']['data_format']
     n_in = l.get_shape().as_list()[1 if data_format in [
@@ -134,3 +138,5 @@ def resnet_backbone(image, num_blocks, group_func, block_func):
         logits = FullyConnected('linear', l, 1000,
                                 kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     return logits
+
+
