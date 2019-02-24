@@ -75,6 +75,7 @@
     ✔ why first residual block don't need preactivation? @done(19-02-23 00:06)
         ✔ I know, 就像论中中所说, preactivation 本质上还是一种 post-activation, 第一个卷基层的激活函数为 BNReLU, 所以第一个 res block 不需要 activation @done(19-02-23 00:06)
     ☐ why no bias in resnet?
+    ☐ 多 gpu 下的 batch_size, steps_per_epoch 如何计算？
     ✔ stride = 2 的时候可以直接让 Feature map 的大小减小一半? @done(19-02-23 00:06) Yes
     ☐ 上采样插值即可,不需要用 unpooling
     ☐ strided conv 也可以替换为 下采样 + 卷积

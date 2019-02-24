@@ -25,15 +25,16 @@ import tensorflow as tf
 
 
 BATCH_SIZE = 128
+STEPS_PER_EPOCH = 1449 // BATCH_SIZE
 HEIGHT = 480
 WIDTH = 640
 
 
 class Model(ModelDesc):
 
-    def __init__(self, n):
+    def __init__(self):
         super(Model, self).__init__()
-        self.n = n
+        
 
     def inputs(self):
         return [tf.placeholder(tf.float32, [None, 4, HEIGHT, WIDTH], 'input_img_depth')]
@@ -234,7 +235,7 @@ class Model(ModelDesc):
         pass
 
 
-def get_data(train_or_test):
+def get_data(input_dir, train_or_test):
     assert train_or_test in ['train', 'test']
     is_train = (train_or_test == 'train')
     ds = NYUBase(train_or_test)
@@ -258,6 +259,45 @@ def get_data(train_or_test):
         ds = PrefetchData(ds, 3, 2)
     return ds
 
+def get_train_conf(dataset, session_init=None):
+    conf = TrainConfig(
+        model=Model(),
+        dataflow=QueueInput(dataset),
+        callbacks=[
+            ModelSaver(),
+            GPUUtilizationTracker(),
+            EstimatedTimeLeft(),
+            ScheduledHyperParamSetter('learning_rate',
+                                      [(1, 0.1), (82, 0.01), (123, 0.001), (300, 0.0002)]),
+        ],
+        max_epoch=400,
+        steps_per_epoch=STEPS_PER_EPOCH,
+        session_init=session_init
+    )
+    return conf
+
 
 if __name__ == "__main__":
-    pass
+    logger.auto_set_dir()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--resnet50', help='path of the pre-trained resnet50 in .npz form')
+    parser.add_argument('--load', help='path of the model to load')
+    parser.add_argument('--apply', help='not train, please be sure to supply --load argument too')
+    args = parser.parse_args()
+
+    if args.apply:
+        pass
+    else:
+        session_init = None
+        if args.resnet50:
+            session_init = get_model_loader(args.resnet50)
+        if args.load:
+            session_init = get_model_loader(args.load)
+        
+        input_dir = '/Users/yee/Desktop/NYUv2'
+        ds = get_data(input_dir, 'train')
+        conf = get_train_conf(ds, session_init)
+
+        trainer = SyncMultiGPUTrainerReplicated(max(get_num_gpu(), 1))
+        launch_train_with_config(conf, trainer)
