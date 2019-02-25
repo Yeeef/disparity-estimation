@@ -47,7 +47,7 @@ class Model(ModelDesc):
 
         # b, h, w, 1
         depth_map = resize_image(tf.expand_dims(
-            original_depth_map, 3), HEIGHT/2, WIDTH/2, 'channels_last')
+            original_depth_map, 3), HEIGHT//2, WIDTH//2, 'channels_last')
         # b, 1, h, w
         depth_map = tf.transpose(depth_map, [0, 3, 1, 2])
         assert tf.test.is_gpu_available()
@@ -96,7 +96,7 @@ class Model(ModelDesc):
                 # @WARN: resize_image_with_pad only accept the image with the format of channels last
                 # here I use up-sampling rather than unpooling
                 # 1024*H/16*W/16
-                l = resize_image(l, HEIGHT/16, WIDTH/16)
+                l = resize_image(l, HEIGHT//16, WIDTH//16)
 
                 # 512*H/16*W/16
                 shortcut = Conv2D('conv0', l, filters=512, kernel_size=1)
@@ -114,11 +114,11 @@ class Model(ModelDesc):
                 l = BNReLU(l)
 
                 # 512*H/8*W/8
-                l = resize_image(l, HEIGHT/8, WIDTH/8)
+                l = resize_image(l, HEIGHT//8, WIDTH//8)
                 # the channels does not decrease, just simply pass the information
                 shortcut = l
 
-                side_input = resize_image(depth_map, HEIGHT/8, WIDTH/8)
+                side_input = resize_image(depth_map, HEIGHT//8, WIDTH//8)
                 side_input = Conv2D('stride_conv0', side_input,
                                     64, kernel_size=1, activation=BNReLU)
 
@@ -138,10 +138,10 @@ class Model(ModelDesc):
                 side_output0 = Conv2D('multi_conv0', l, 1, kernel_size=1)
 
                 # 512*H/4*W/4
-                l = resize_image(l, HEIGHT/4, WIDTH/4)
+                l = resize_image(l, HEIGHT//4, WIDTH//4)
                 shortcut = Conv2D('conv0', l, 256, kernel_size=1)
 
-                side_input = resize_image(depth_map, HEIGHT/4, WIDTH/4)
+                side_input = resize_image(depth_map, HEIGHT//4, WIDTH//4)
                 side_input = Conv2D('stride_conv0', side_input,
                                     64, kernel_size=1, activation=BNReLU)
                 concat_ret = tf.concat(values=[l, side_input], axis=1)
@@ -162,11 +162,11 @@ class Model(ModelDesc):
                 side_output1 = Conv2D('multi_conv1', l, 1, kernel_size=1)
 
                 # 256*H/2*W/2
-                l = resize_image(l, HEIGHT/2, WIDTH/2)
+                l = resize_image(l, HEIGHT//2, WIDTH//2)
                 shortcut = Conv2D('conv0', l, 128, kernel_size=1)
 
                 # @WARN: actually, the default is H/2*W/2 for depth map
-                side_input = resize_image(depth_map, HEIGHT/2, WIDTH/2)
+                side_input = resize_image(depth_map, HEIGHT//2, WIDTH//2)
                 side_input = Conv2D('stride_conv0', side_input,
                                     64, kernel_size=1, activation=BNReLU)
                 concat_ret = tf.concat(values=[l, side_input], axis=1)
@@ -195,36 +195,42 @@ class Model(ModelDesc):
                 output = Conv2D('output_conv', c2, 1,
                                 kernel_size=1, activation=BNReLU)
 
-        batch_size, height, width = output.get_shape().as_list()[:3]
+        # channels_first
+        batch_size, _, height, width = output.get_shape().as_list()
         # H/8*W/8
         loss0 = get_loss(
-            resize_image(tf.expand_dims(original_depth_map, 1),
-                         HEIGHT/8, WIDTH/8, 'channels_first'),
-            tf.reshape(side_output0, [batch_size, height, width]),
-            name='loss0'
+            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT//8, WIDTH//8, 'channels_first'), axis=1),
+            tf.squeeze(side_output0, axis=1),
+            # tf.reshape(side_output0, [batch_size, height, width]),
+            name='loss0',
+            alpha=0.5
         )
+
         loss1 = get_loss(
-            resize_image(tf.expand_dims(original_depth_map, 1),
-                         HEIGHT/4, WIDTH/4, 'channels_first'),
-            tf.reshape(side_output1, [batch_size, height, width]),
-            name='loss1'
+            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT//4, WIDTH//4, 'channels_first'), axis=1),
+            tf.squeeze(side_output1, axis=1),
+            name='loss1',
+            alpha=0.5
         )
+
         loss2 = get_loss(
-            resize_image(tf.expand_dims(original_depth_map, 1),
-                         HEIGHT/2, WIDTH/2, 'channels_first'),
-            tf.reshape(side_output2, [batch_size, height, width]),
-            name='loss2'
+            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT//2, WIDTH//2, 'channels_first'), axis=1),
+            tf.squeeze(side_output2, axis=1),
+            name='loss2',
+            alpha=0.5
         )
+
         loss_output = get_loss(
             original_depth_map,
-            tf.reshape(output, [batch_size, height, width]),
-            name='loss_output'
+            tf.squeeze(output, axis=1),
+            name='loss_output',
+            alpha=0.5
         )
 
-        add_moving_summary(loss)
+        add_moving_summary(loss0, loss1, loss2, loss_output)
         add_param_summary(('.*/W', ['histogram']))
 
-        return tf.add_n(loss0, loss1, loss2, loss_output, name='loss')
+        return tf.add_n([loss0, loss1, loss2, loss_output], name='loss')
 
     def optimizer(self):
         lr = tf.get_variable(
@@ -238,7 +244,7 @@ class Model(ModelDesc):
 def get_data(input_dir, train_or_test):
     assert train_or_test in ['train', 'test']
     is_train = (train_or_test == 'train')
-    ds = NYUBase(train_or_test)
+    ds = NYUBase(input_dir, train_or_test)
     img_mean, depth_mean = ds.get_per_pixel_mean()
 
     if is_train:
@@ -246,23 +252,23 @@ def get_data(input_dir, train_or_test):
             imgaug.RandomCrop(128),
             imgaug.Flip(horiz=True),
             imgaug.MapImage(
-                lambda x: x - tf.concat(values=[img_mean, depth_mean], concat_dim=0))
+                lambda x: x - tf.concat(values=[img_mean, depth_mean], axis=0))
         ]
     else:
         augmentors = [
             imgaug.MapImage(
-                lambda x: x - tf.concat(values=[img_mean, depth_mean], concat_dim=0))
+                lambda x: x - tf.concat(values=[img_mean, depth_mean], axis=0))
         ]
     ds = AugmentImageComponent(ds, augmentors)
     ds = BatchData(ds, BATCH_SIZE, remainder=not is_train)
-    if is_train:
-        ds = PrefetchData(ds, 3, 2)
+    # if is_train:
+    #     ds = PrefetchData(ds, 3, 2)
     return ds
 
 def get_train_conf(dataset, session_init=None):
     conf = TrainConfig(
         model=Model(),
-        dataflow=QueueInput(dataset),
+        data=QueueInput(dataset),
         callbacks=[
             ModelSaver(),
             GPUUtilizationTracker(),
@@ -281,10 +287,14 @@ if __name__ == "__main__":
     logger.auto_set_dir()
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.')
     parser.add_argument('--resnet50', help='path of the pre-trained resnet50 in .npz form')
     parser.add_argument('--load', help='path of the model to load')
     parser.add_argument('--apply', help='not train, please be sure to supply --load argument too')
     args = parser.parse_args()
+
+    if args.gpu:
+        os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
     if args.apply:
         pass
@@ -295,7 +305,7 @@ if __name__ == "__main__":
         if args.load:
             session_init = get_model_loader(args.load)
         
-        input_dir = '/Users/yee/Desktop/NYUv2'
+        input_dir = '/home/vradmin/Desktop/data/NYUv2'
         ds = get_data(input_dir, 'train')
         conf = get_train_conf(ds, session_init)
 

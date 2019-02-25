@@ -8,16 +8,15 @@ from tensorpack.utils.gpu import get_num_gpu
 
 import tensorflow as tf
 
-
 def resize_image(image, out_height, out_width, data_format='channels_first'):
     assert data_format in ['channels_first', 'channels_last']
     if data_format == 'channels_last':
-        return tf.image.resize_image_with_pad(image, out_height, out_width)
+        return tf.image.resize_images(image, [out_height, out_width])
     else:
         # batch_size, channel, height, width -> batch, h, w, ch
         tmp_img = tf.transpose(image, [0, 2, 3, 1])
-        tmp_img = tf.image.resize_image_with_pad(
-            tmp_img, out_height, out_width)
+        tmp_img = tf.image.resize_images(
+            tmp_img, [out_height, out_width])
         # b, h, w, c -> b, c, h, w
         return tf.transpose(tmp_img, [0, 3, 1, 2])
 
@@ -65,10 +64,10 @@ def self_image_gradients(image, data_format='channels_last'):
     if data_format == 'channels_last':
         return tf.image.image_gradients(image)
     else:
-        # b, c, h, w
-        tmp_img = tf.transpose(image, [0, 3, 1, 2])
+        # image: b, c, h, w
+        tmp_img = tf.transpose(image, [0, 2, 3, 1])
         tmp_dy, tmp_dx = tf.image.image_gradients(tmp_img)
-        return (tf.transpose(tmp_dy, [0, 2, 3, 1]), tf.transpose(tmp_dx, [0, 2, 3, 1]))
+        return (tf.transpose(tmp_dy, [0, 3, 1, 2]), tf.transpose(tmp_dx, [0, 3, 1, 2]))
 
 # depth map and output are all 'b*H*W' (b denotes 'batch')
 def get_loss(depth_map, output, alpha, name="loss"):
@@ -78,30 +77,33 @@ def get_loss(depth_map, output, alpha, name="loss"):
 
 def get_l1(D, G_x, G_y, name='l1_loss'):
 
-    return tf.reduce_mean(tf.add_n(tf.abs(D), tf.abs(G_x), tf.abs(G_y)), name=name)
+    return tf.reduce_mean(tf.add_n([tf.abs(D), tf.abs(G_x), tf.abs(G_y)]), name=name)
 
 
 def get_l2(D, G_x, G_y, name='l2_loss'):
 
-    return tf.reduce_mean(tf.add_n(tf.square(D), tf.square(G_x), tf.square(G_y)), name=name)
+    return tf.reduce_mean(tf.add_n([tf.square(D), tf.square(G_x), tf.square(G_y)]), name=name)
 
 # return D, G_x, G_y
 def get_D_and_G(depth_map, output):
-    batch_size, height, width = depth_map.get_shape().as_list()[:3]
+    # batch_size, height, width = depth_map.get_shape().as_list()[:3]
+
     D = pixel_loss(depth_map, output, name='D')
     # b * H * W * 1
     dy_depth_map, dx_depth_map = self_image_gradients(
         tf.expand_dims(depth_map, 3),
-        'channels_last')
-    dy_depth_map = tf.reshape(dy_depth_map, [batch_size, height, width])
-    dx_depth_map = tf.reshape(dx_depth_map, [batch_size, height, width])
+        data_format='channels_last')
+    
+    dy_depth_map = tf.squeeze(dy_depth_map, axis=3)
+    dx_depth_map = tf.squeeze(dx_depth_map, axis=3)
+
     # b * H * W * 1
     dy_output, dx_output = self_image_gradients(
         tf.expand_dims(output, 3),
-        'channels_last'
+        data_format='channels_last'
     )
-    dy_output = tf.reshape(dy_output, [batch_size, height, width])
-    dx_output = tf.reshape(dx_output, [batch_size, height, width])
+    dy_output = tf.squeeze(dy_output, axis=3)
+    dx_output = tf.squeeze(dx_output, axis=3)
     G_y = pixel_loss(dy_depth_map, dy_output, name='G_y')
     G_x = pixel_loss(dx_depth_map, dx_output, name='G_x')
 
@@ -112,6 +114,7 @@ def get_rank_loss(depth_map, output):
 
 # depth map and output are all 'b*H*W' (b denotes 'batch')
 def pixel_loss(depth_map, output, name):
+    _, height, width = depth_map.get_shape().as_list()
     # D(I,i) = log(Z_i) - log(I_i^d) - (1 / N) * \Sigma(log(Z_j) - log(I_j^d))
     # b*H*W
     log_depth_map = tf.log(depth_map)
@@ -124,7 +127,7 @@ def pixel_loss(depth_map, output, name):
     # every feature map of a batch owns a mean value
     tmp1 = tf.reduce_mean(sub_log, [1, 2], keepdims=True)
     # b * H * W
-    tmp1 = tf.tile(tmp1, [1, HEIGHT, WIDTH])
+    tmp1 = tf.tile(tmp1, [1, height, width])
 
     # b * H * W
     return tf.subtract(sub_log, tmp1, name=name)
