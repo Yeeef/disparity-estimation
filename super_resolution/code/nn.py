@@ -86,10 +86,14 @@ class Model(ModelDesc):
             """
             up-sampling
             """
+            
+            
+            
+
             def upsample(x, factor=2):
                 _, h, w, _ = x.get_shape().as_list()
                 x = tf.image.resize_nearest_neighbor(x, [factor * h, factor * w], align_corners=True)
-            return x
+                return x
 
 
 
