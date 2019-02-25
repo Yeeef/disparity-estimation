@@ -40,6 +40,7 @@ class Model(ModelDesc):
         super(Model, self).__init__()
         self.n = n
 
+    # channel last
     def inputs(self):
         return [tf.placeholder(tf.float32, [None, 32, 32, 3], 'input'),
                 tf.placeholder(tf.int32, [None], 'label')]
@@ -69,12 +70,17 @@ class Model(ModelDesc):
                 b1 = l if first else BNReLU(l)
                 c1 = Conv2D('conv1', b1, out_channel,
                             strides=stride1, activation=BNReLU)
+                # the default value of strides is 1
+                # the kernel size is defined in the scope of `argscope`
+                # the default activation is `identity mapping`
                 c2 = Conv2D('conv2', c1, out_channel)
-                # 一下是对 identity mapping 时 increase dim 做的操作
-                # l 的 channel 数怎么办? 通过 tf.pad 填充的
+                # increase the dimension of the channel
+                # at the same time, the size of the feature map is halved
                 if increase_dim:
+                    # half the size of the feature map
                     l = AvgPooling('pool', l, 2)
-                    
+                    # increase the dimension of channel with 0 filled
+                    # we can also use a 1 * 1 conv layer to do this
                     l = tf.pad(
                         l, [[0, 0], [in_channel // 2, in_channel // 2], [0, 0], [0, 0]])
 

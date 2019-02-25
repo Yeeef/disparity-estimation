@@ -16,51 +16,67 @@
     ✔ 了解BN @done(18-12-20 20:55)
     ✔ down sampling and up sampling @done(18-12-20 20:24)
     ✔ 大致熟悉 ResNet @done(18-12-19 17:30)
-    ☐ 熟悉 `tensorpack`
+    ✔ 熟悉 `tensorpack` @done(19-02-22 21:22)
         ✔ vgg 16 @done(18-12-21 18:24)
-        ☐ ResNet
+        ✔ ResNet @done(19-02-22 21:22)
 
 12.22 - 12.27:
     ☐ low-priority
-        ☐ 了解 FPN
+        ✔ 了解 FPN @done(19-02-24 12:21)
         ☐ 了解 refinenet
         ☐ deconv & conv2D transpose
     ☐ 论文阅读
         ✔ ResNet @done(19-01-02 11:09)
         ✔ vgg @done(19-01-02 11:09)
         ✔ imagenet in 1 hour @done(19-01-28 20:49)
+        ✔ scale invariant loss @done(19-02-23 00:07)
         ☐ BatchNormalization
         ☐ Group Normalization
         ☐ Going deeper with convolution
         ☐ scale augmentation in resnet
     ☐ NYU 数据集准备 (CC)
+        ✔ 将图片合成为 DRGB @done(19-02-23 00:05)
+        ✔ 实现 NYUBase 类 @done(19-02-23 00:05)
+        ☐ 人工切割数据集
     ☐ 服务器环境搭建
         ✔ tensorflow-gpu @done(18-12-21 19:29)
         ☐ 远程访问 jupyter-notebook
         ☐ team-viewer
         ☐ 如何利用服务器集群?
-    ☐ 继续熟悉 tensorpack
+    ✔ 继续熟悉 tensorpack @done(19-02-23 00:06)
         ✔ MNIST 熟悉基本 API @done(19-01-02 11:08)
         ✔ vgg 16 @done(19-01-03 22:34)
-        ☐ ResNet
-    ☐ warm up
+        ✔ ResNet @done(19-02-23 00:06)
+    ✔ warm up @done(19-02-23 00:06)
         ✔ mnist @done(19-01-28 15:58)
         ✔ vgg @done(19-01-28 20:11)
-        ☐ resnet
+        ✔ resnet @done(19-02-21 16:49)
     ☐ 想清楚网络结构
-        ☐ 画出设计图
+        ✔ 画出设计图 @done(19-02-22 21:13)
         ☐ 技术细节
             ☐ image preprocessing, mean, variance
-            ☐ augment
+            ✔ augment @done(19-02-23 00:06) just use tensorpack functions
+            ✔ bottleneck block @done(19-02-23 00:06) I know what it means
             ☐ FPN
             ☐ refinenet
             ☐ skip connection
-        ☐ 代码实现
-    ☐ why first residual block don't need preactivation?
-        ☐ I know, 就像论中中所说, preactivation 本质上还是一种 post-activation, 第一个卷基层的激活函数为 BNReLU, 所以第一个 res block 不需要 activation
+            ☐ 能否将 depth map 进行卷积，原图像做 side-input 来 enhance edge details
+        ✔ 代码实现 @done(19-02-22 21:13)
+        ☐ model save and evaluation
+            ☐ toy example
+                ✔ 加载模型进行 predict @done(19-02-24 12:20)
+                ✔ 加载模型继续原有配置进行训练 @done(19-02-24 12:20)
+                ☐ 加载模型后，改变某些 variable, 进行训练
+            ✔ 加载一波 ResNet:50 @done(19-02-24 19:45)
+            ☐ 改写代码，backbone 直接替换为 ResNet50
+            ☐ 如何利用 pretrained model, 如何加载？图片大小不一样如何解决？模型略不相同如何解决？
+            ☐ 如何从 check point 继续训练
+            ☐ 利用 tensorpack 的 API 就可以了吗？
+    ✔ why first residual block don't need preactivation? @done(19-02-23 00:06)
+        ✔ I know, 就像论中中所说, preactivation 本质上还是一种 post-activation, 第一个卷基层的激活函数为 BNReLU, 所以第一个 res block 不需要 activation @done(19-02-23 00:06)
     ☐ why no bias in resnet?
-    ☐ stride = 2 的时候可以直接让 Feature map 的大小减小一半?
-    ☐ augment 如何利用?
+    ☐ 多 gpu 下的 batch_size, steps_per_epoch 如何计算？
+    ✔ stride = 2 的时候可以直接让 Feature map 的大小减小一半? @done(19-02-23 00:06) Yes
     ☐ 上采样插值即可,不需要用 unpooling
     ☐ strided conv 也可以替换为 下采样 + 卷积
     ☐ down sample 利用 opencv

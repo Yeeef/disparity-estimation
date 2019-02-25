@@ -64,7 +64,7 @@ Please make sure that
 
 path 的初始定义在 `/etc/enviroment` 中
  
-dkkg -i 安装包才好使
+dkpg -i 安装包才好使
 
 ## vgg16
 
