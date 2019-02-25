@@ -15,7 +15,7 @@ def read_NYU(filenames):
     for file in filenames:
         with open(file, 'rb') as f:
             # rgb concat with depth
-            # channels_first
+            # channels_first 4,h,w
             crgb = pickle.load(f)
         ret.append(crgb)
     return ret
@@ -69,15 +69,16 @@ class NYUBase(RNGDataFlow):
             yield self.data[k]
     
     def get_per_pixel_mean(self, names=('train', 'test')):
-        # b, c, h, w
+        # 1200, 3, h, w
         all_imgs = np.array([x[:3] for x in self.data], dtype=np.float32)
-        # b, h, w
+        # 1200, h, w
         all_depths = np.array([x[3] for x in self.data], dtype=np.float32)
         # 3, h, w
         img_mean = np.mean(all_imgs, axis=0)
+        print(img_mean.shape)
         # 1, h, w
         depth_mean = np.expand_dims(np.mean(all_depths, axis=0), 0)
-
+        print(depth_mean.shape)
         return (img_mean, depth_mean)
 
     

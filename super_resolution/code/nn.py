@@ -50,7 +50,8 @@ class Model(ModelDesc):
             original_depth_map, 3), HEIGHT//2, WIDTH//2, 'channels_last')
         # b, 1, h, w
         depth_map = tf.transpose(depth_map, [0, 3, 1, 2])
-        assert tf.test.is_gpu_available()
+
+        # assert tf.test.is_gpu_available()
 
         def _resnet_backbone(image, num_blocks, group_func, block_func):
             with argscope(Conv2D, use_bias=False,
@@ -70,7 +71,7 @@ class Model(ModelDesc):
         def resnet50(image):
             return _resnet_backbone(image, [3, 4, 6, 3], resnet_group, resnet_bottleneck)
 
-        with argscope([Conv2D, AvgPooling, BatchNorm, GlobalAvgPooling], data_format='channels_first'), \
+        with argscope([Conv2D, MaxPooling, AvgPooling, BatchNorm, GlobalAvgPooling], data_format='channels_first'), \
                 argscope(Conv2D, use_bias=False, kernel_size=3,
                          kernel_initializer=tf.variance_scaling_initializer(scale=2.0, mode='fan_out')):
             """
@@ -265,17 +266,19 @@ def get_data(input_dir, train_or_test):
     #     ds = PrefetchData(ds, 3, 2)
     return ds
 
-def get_train_conf(dataset, session_init=None):
+def get_train_conf(dataset, is_gpu, session_init=None):
+    callbacks = [
+        ModelSaver(),
+        EstimatedTimeLeft(),
+        ScheduledHyperParamSetter('learning_rate',
+                                  [(1, 0.1), (82, 0.01), (123, 0.001), (300, 0.0002)]),
+    ]
+    if is_gpu:
+        callbacks.append(GPUUtilizationTracker())
     conf = TrainConfig(
         model=Model(),
         data=QueueInput(dataset),
-        callbacks=[
-            ModelSaver(),
-            GPUUtilizationTracker(),
-            EstimatedTimeLeft(),
-            ScheduledHyperParamSetter('learning_rate',
-                                      [(1, 0.1), (82, 0.01), (123, 0.001), (300, 0.0002)]),
-        ],
+        callbacks=callbacks,
         max_epoch=400,
         steps_per_epoch=STEPS_PER_EPOCH,
         session_init=session_init
@@ -287,14 +290,19 @@ if __name__ == "__main__":
     logger.auto_set_dir()
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--data', help='path to the NYU data', default='Users/yee/Desktop/NYUv2')
+    parser.add_argument('--cpu', help='just for debug', action='store_true')
     parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.')
     parser.add_argument('--resnet50', help='path of the pre-trained resnet50 in .npz form')
     parser.add_argument('--load', help='path of the model to load')
     parser.add_argument('--apply', help='not train, please be sure to supply --load argument too')
     args = parser.parse_args()
 
+    if args.cpu:
+        is_gpu = False
     if args.gpu:
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+        is_gpu = True
 
     if args.apply:
         pass
@@ -305,9 +313,12 @@ if __name__ == "__main__":
         if args.load:
             session_init = get_model_loader(args.load)
         
-        input_dir = '/home/vradmin/Desktop/data/NYUv2'
+        input_dir = args.data
         ds = get_data(input_dir, 'train')
-        conf = get_train_conf(ds, session_init)
+        conf = get_train_conf(ds, is_gpu, session_init)
 
-        trainer = SyncMultiGPUTrainerReplicated(max(get_num_gpu(), 1))
+        if args.cpu:
+            trainer = SimpleTrainer()
+        else:
+            trainer = SyncMultiGPUTrainerReplicated(max(get_num_gpu(), 1))
         launch_train_with_config(conf, trainer)
