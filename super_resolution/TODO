@@ -1,5 +1,5 @@
 12.14 - 12.21:
-    ☐ 详细阅读论文
+    ✔ 详细阅读论文 @done(19-02-24 20:56)
         ✔ L1, L2 loss @done(18-12-19 17:29)
         ✔ rank loss @done(18-12-20 20:29)
         ✔ multiscale (CNN) 与 superresolution 什么关系? @done(18-12-21 18:24)
@@ -68,10 +68,10 @@
                 ✔ 加载模型继续原有配置进行训练 @done(19-02-24 12:20)
                 ☐ 加载模型后，改变某些 variable, 进行训练
             ✔ 加载一波 ResNet:50 @done(19-02-24 19:45)
-            ☐ 改写代码，backbone 直接替换为 ResNet50
-            ☐ 如何利用 pretrained model, 如何加载？图片大小不一样如何解决？模型略不相同如何解决？
-            ☐ 如何从 check point 继续训练
-            ☐ 利用 tensorpack 的 API 就可以了吗？
+            ✔ 改写代码，backbone 直接替换为 ResNet50 @done(19-02-24 20:55)
+            ✔ 如何利用 pretrained model, 如何加载？图片大小不一样如何解决？模型略不相同如何解决？ @done(19-02-24 20:55)
+            ✔ 如何从 check point 继续训练 @done(19-02-24 20:55)
+            ✔ 利用 tensorpack 的 API 就可以了吗？ @done(19-02-24 20:55)
     ✔ why first residual block don't need preactivation? @done(19-02-23 00:06)
         ✔ I know, 就像论中中所说, preactivation 本质上还是一种 post-activation, 第一个卷基层的激活函数为 BNReLU, 所以第一个 res block 不需要 activation @done(19-02-23 00:06)
     ☐ why no bias in resnet?
