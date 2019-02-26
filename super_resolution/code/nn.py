@@ -8,7 +8,7 @@ backbone: resnet
 """
 
 from self_utils import *
-from data import *
+from NYU import NYUBase
 
 import argparse
 import os
@@ -35,15 +35,14 @@ class Model(ModelDesc):
     def __init__(self):
         super(Model, self).__init__()
         
-
     def inputs(self):
-        return [tf.placeholder(tf.float32, [None, 4, HEIGHT, WIDTH], 'input_img_depth')]
+        return [tf.placeholder(tf.float32, [None, HEIGHT, WIDTH, 4], 'input_img_depth')]
 
     def build_graph(self, img_depth):
         # b, c, h, w
-        image = img_depth[:, :3]
+        image = tf.reshape(img_depth[:, :, :, :3], [0, 3, 1, 2])
         # b, h, w
-        original_depth_map = img_depth[:, 3]
+        original_depth_map = img_depth[:, :, :, 3]
 
         # b, h, w, 1
         depth_map = resize_image(tf.expand_dims(
@@ -200,7 +199,8 @@ class Model(ModelDesc):
         batch_size, _, height, width = output.get_shape().as_list()
         # H/8*W/8
         loss0 = get_loss(
-            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT//8, WIDTH//8, 'channels_first'), axis=1),
+            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1),
+                                    HEIGHT//8, WIDTH//8, 'channels_first'), axis=1),
             tf.squeeze(side_output0, axis=1),
             # tf.reshape(side_output0, [batch_size, height, width]),
             name='loss0',
@@ -208,14 +208,16 @@ class Model(ModelDesc):
         )
 
         loss1 = get_loss(
-            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT//4, WIDTH//4, 'channels_first'), axis=1),
+            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1),
+                                    HEIGHT//4, WIDTH//4, 'channels_first'), axis=1),
             tf.squeeze(side_output1, axis=1),
             name='loss1',
             alpha=0.5
         )
 
         loss2 = get_loss(
-            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1), HEIGHT//2, WIDTH//2, 'channels_first'), axis=1),
+            tf.squeeze(resize_image(tf.expand_dims(original_depth_map, 1),
+                                    HEIGHT//2, WIDTH//2, 'channels_first'), axis=1),
             tf.squeeze(side_output2, axis=1),
             name='loss2',
             alpha=0.5
@@ -245,28 +247,29 @@ class Model(ModelDesc):
 def get_data(input_dir, train_or_test):
     assert train_or_test in ['train', 'test']
     is_train = (train_or_test == 'train')
-    ds = NYUBase(input_dir, train_or_test)
-    # img_mean, depth_mean = ds.get_per_pixel_mean()
-    # concat_mean = np.concatenate([img_mean, depth_mean], axis=0)
+    ds = NYUBase(input_dir, train_or_test, 'channels_last')
+    img_mean, depth_mean = ds.get_per_pixel_mean()
+    concat_mean = np.concatenate([img_mean, depth_mean], axis=2)
+    assert concat_mean.shape == (HEIGHT, WIDTH, 4), concat_mean.shape
 
     if is_train:
         augmentors = [
-            # imgaug.RandomCrop(128),
             imgaug.MapImage(
                 lambda x: x - concat_mean),
+            imgaug.Flip(horiz=True),
             imgaug.Rotation(5),
-            imgaug.Flip(horiz=True)
         ]
     else:
         augmentors = [
-            # imgaug.MapImage(
-            #     lambda x: x - concat_mean)
+            imgaug.MapImage(
+                lambda x: x - concat_mean)
         ]
-    # ds = AugmentImageComponent(ds, augmentors)
+    ds = AugmentImageComponent(ds, augmentors)
     ds = BatchData(ds, BATCH_SIZE, remainder=not is_train)
     # if is_train:
     #     ds = PrefetchData(ds, 3, 2)
     return ds
+
 
 def get_train_conf(dataset, is_gpu, session_init=None):
     callbacks = [
@@ -290,15 +293,17 @@ def get_train_conf(dataset, is_gpu, session_init=None):
 
 
 if __name__ == "__main__":
-    
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', help='path to the NYU data', default='Users/yee/Desktop/NYUv2')
+    parser.add_argument('--data', help='path to the NYU data',
+                        default='/Users/yee/Desktop/NYUv2')
     parser.add_argument('--cpu', help='just for debug', action='store_true')
     parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.')
-    parser.add_argument('--resnet50', help='path of the pre-trained resnet50 in .npz form')
+    parser.add_argument(
+        '--resnet50', help='path of the pre-trained resnet50 in .npz form')
     parser.add_argument('--load', help='path of the model to load')
-    parser.add_argument('--apply', help='not train, please be sure to supply --load argument too')
+    parser.add_argument(
+        '--apply', help='not train, please be sure to supply --load argument too')
     args = parser.parse_args()
 
     if args.cpu:
@@ -317,7 +322,7 @@ if __name__ == "__main__":
             session_init = get_model_loader(args.resnet50)
         if args.load:
             session_init = get_model_loader(args.load)
-        
+
         input_dir = args.data
         ds = get_data(input_dir, 'train')
         conf = get_train_conf(ds, is_gpu, session_init)
