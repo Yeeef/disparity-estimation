@@ -66,7 +66,7 @@ class NYUBase(RNGDataFlow):
         if self.shuffle:
             self.rng.shuffle(idxs)
         for k in idxs:
-            yield self.data[k]
+            yield [self.data[k]]
     
     def get_per_pixel_mean(self, names=('train', 'test')):
         # 1200, 3, h, w
@@ -75,10 +75,10 @@ class NYUBase(RNGDataFlow):
         all_depths = np.array([x[3] for x in self.data], dtype=np.float32)
         # 3, h, w
         img_mean = np.mean(all_imgs, axis=0)
-        print(img_mean.shape)
+        # print(img_mean.shape)
         # 1, h, w
         depth_mean = np.expand_dims(np.mean(all_depths, axis=0), 0)
-        print(depth_mean.shape)
+        # print(depth_mean.shape)
         return (img_mean, depth_mean)
 
     
@@ -93,5 +93,15 @@ if __name__ == "__main__":
     ds = NYUBase('/Users/yee/Desktop/NYUv2', 'test')
     print(len(ds))
     img_mean, depth_mean = ds.get_per_pixel_mean()
-    print(img_mean)
-    print(depth_mean)
+    print(img_mean.shape)
+    print(depth_mean.shape)
+    print('=' * 20)
+    i = 0
+    for k in ds:
+        print(np.array(k).shape)
+        print(k)
+        print(type(k))
+        i = i + 1
+        if i == 1:
+            break
+    

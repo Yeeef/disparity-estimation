@@ -246,21 +246,23 @@ def get_data(input_dir, train_or_test):
     assert train_or_test in ['train', 'test']
     is_train = (train_or_test == 'train')
     ds = NYUBase(input_dir, train_or_test)
-    img_mean, depth_mean = ds.get_per_pixel_mean()
+    # img_mean, depth_mean = ds.get_per_pixel_mean()
+    # concat_mean = np.concatenate([img_mean, depth_mean], axis=0)
 
     if is_train:
         augmentors = [
-            imgaug.RandomCrop(128),
-            imgaug.Flip(horiz=True),
+            # imgaug.RandomCrop(128),
             imgaug.MapImage(
-                lambda x: x - tf.concat(values=[img_mean, depth_mean], axis=0))
+                lambda x: x - concat_mean),
+            imgaug.Rotation(5),
+            imgaug.Flip(horiz=True)
         ]
     else:
         augmentors = [
-            imgaug.MapImage(
-                lambda x: x - tf.concat(values=[img_mean, depth_mean], axis=0))
+            # imgaug.MapImage(
+            #     lambda x: x - concat_mean)
         ]
-    ds = AugmentImageComponent(ds, augmentors)
+    # ds = AugmentImageComponent(ds, augmentors)
     ds = BatchData(ds, BATCH_SIZE, remainder=not is_train)
     # if is_train:
     #     ds = PrefetchData(ds, 3, 2)
@@ -277,7 +279,8 @@ def get_train_conf(dataset, is_gpu, session_init=None):
         callbacks.append(GPUUtilizationTracker())
     conf = TrainConfig(
         model=Model(),
-        data=QueueInput(dataset),
+        # data=QueueInput(dataset),
+        data=FeedInput(dataset),
         callbacks=callbacks,
         max_epoch=400,
         steps_per_epoch=STEPS_PER_EPOCH,
@@ -287,7 +290,7 @@ def get_train_conf(dataset, is_gpu, session_init=None):
 
 
 if __name__ == "__main__":
-    logger.auto_set_dir()
+    
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', help='path to the NYU data', default='Users/yee/Desktop/NYUv2')
@@ -300,8 +303,10 @@ if __name__ == "__main__":
 
     if args.cpu:
         is_gpu = False
+        logger.auto_set_dir(action='d')
     if args.gpu:
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+        logger.auto_set_dir()
         is_gpu = True
 
     if args.apply:

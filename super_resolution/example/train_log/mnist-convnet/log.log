@@ -1,25 +1,25 @@
-[32m[0128 16:24:26 @logger.py:87][0m Argv: mnist-convnet.py
-[32m[0128 16:24:26 @fs.py:101][0m [5m[31mWRN[0m Env var $TENSORPACK_DATASET not set, using /Users/yee/tensorpack_data for datasets.
-[32m[0128 16:24:27 @trainers.py:47][0m Building graph for a single training tower ...
-[32m[0128 16:24:27 @registry.py:121][0m conv0 input: [None, 28, 28, 1]
-[32m[0128 16:24:27 @registry.py:129][0m conv0 output: [None, 28, 28, 32]
-[32m[0128 16:24:27 @registry.py:121][0m pool0 input: [None, 28, 28, 32]
-[32m[0128 16:24:27 @registry.py:129][0m pool0 output: [None, 14, 14, 32]
-[32m[0128 16:24:27 @registry.py:121][0m conv1 input: [None, 14, 14, 32]
-[32m[0128 16:24:27 @registry.py:129][0m conv1 output: [None, 14, 14, 32]
-[32m[0128 16:24:27 @registry.py:121][0m conv2 input: [None, 14, 14, 32]
-[32m[0128 16:24:27 @registry.py:129][0m conv2 output: [None, 14, 14, 32]
-[32m[0128 16:24:27 @registry.py:121][0m pool1 input: [None, 14, 14, 32]
-[32m[0128 16:24:27 @registry.py:129][0m pool1 output: [None, 7, 7, 32]
-[32m[0128 16:24:27 @registry.py:121][0m conv3 input: [None, 7, 7, 32]
-[32m[0128 16:24:27 @registry.py:129][0m conv3 output: [None, 7, 7, 32]
-[32m[0128 16:24:27 @registry.py:121][0m fc0 input: [None, 7, 7, 32]
-[32m[0128 16:24:27 @registry.py:129][0m fc0 output: [None, 512]
-[32m[0128 16:24:27 @registry.py:121][0m fc1 input: [None, 512]
-[32m[0128 16:24:28 @registry.py:129][0m fc1 output: [None, 10]
-[32m[0128 16:24:28 @regularize.py:95][0m regularize_cost() found 2 variables to regularize.
-[32m[0128 16:24:28 @regularize.py:20][0m The following tensors will be regularized: fc0/W:0, fc1/W:0
-[32m[0128 16:24:28 @model_utils.py:64][0m [36mTrainable Variables: 
+[32m[0226 10:08:32 @logger.py:87][0m Argv: mnist-convnet.py
+[32m[0226 10:08:32 @fs.py:101][0m [5m[31mWRN[0m Env var $TENSORPACK_DATASET not set, using /Users/yee/tensorpack_data for datasets.
+[32m[0226 10:08:33 @trainers.py:47][0m Building graph for a single training tower ...
+[32m[0226 10:08:33 @registry.py:121][0m conv0 input: [None, 28, 28, 1]
+[32m[0226 10:08:33 @registry.py:129][0m conv0 output: [None, 28, 28, 32]
+[32m[0226 10:08:33 @registry.py:121][0m pool0 input: [None, 28, 28, 32]
+[32m[0226 10:08:33 @registry.py:129][0m pool0 output: [None, 14, 14, 32]
+[32m[0226 10:08:33 @registry.py:121][0m conv1 input: [None, 14, 14, 32]
+[32m[0226 10:08:33 @registry.py:129][0m conv1 output: [None, 14, 14, 32]
+[32m[0226 10:08:33 @registry.py:121][0m conv2 input: [None, 14, 14, 32]
+[32m[0226 10:08:33 @registry.py:129][0m conv2 output: [None, 14, 14, 32]
+[32m[0226 10:08:33 @registry.py:121][0m pool1 input: [None, 14, 14, 32]
+[32m[0226 10:08:33 @registry.py:129][0m pool1 output: [None, 7, 7, 32]
+[32m[0226 10:08:33 @registry.py:121][0m conv3 input: [None, 7, 7, 32]
+[32m[0226 10:08:33 @registry.py:129][0m conv3 output: [None, 7, 7, 32]
+[32m[0226 10:08:33 @registry.py:121][0m fc0 input: [None, 7, 7, 32]
+[32m[0226 10:08:33 @registry.py:129][0m fc0 output: [None, 512]
+[32m[0226 10:08:33 @registry.py:121][0m fc1 input: [None, 512]
+[32m[0226 10:08:33 @registry.py:129][0m fc1 output: [None, 10]
+[32m[0226 10:08:33 @regularize.py:95][0m regularize_cost() found 2 variables to regularize.
+[32m[0226 10:08:33 @regularize.py:20][0m The following tensors will be regularized: fc0/W:0, fc1/W:0
+[32m[0226 10:08:33 @model_utils.py:64][0m [36mTrainable Variables: 
 [0mname       shape              dim
 ---------  --------------  ------
 conv0/W:0  [3, 3, 1, 32]      288
@@ -35,32 +35,12 @@ fc0/b:0    [512]              512
 fc1/W:0    [512, 10]         5120
 fc1/b:0    [10]                10[36m
 Total #vars=12, #params=836522, size=3.19MB[0m
-[32m[0128 16:24:28 @base.py:208][0m Setup callbacks graph ...
-[32m[0128 16:24:28 @inference_runner.py:149][0m [InferenceRunner] Building tower 'InferenceTower' on device /gpu:0 ...
-[32m[0128 16:24:28 @summary.py:46][0m [MovingAverageSummary] 5 operations in collection 'MOVING_SUMMARY_OPS' will be run with session hooks.
-[32m[0128 16:24:28 @summary.py:93][0m Summarizing collection 'summaries' of size 18.
-[32m[0128 16:24:28 @base.py:229][0m Creating the session ...
-[32m[0128 16:24:29 @base.py:235][0m Initializing the session ...
-[32m[0128 16:24:29 @base.py:242][0m Graph Finalized.
-[32m[0128 16:24:29 @inference_runner.py:96][0m [InferenceRunner] Will eval 40 iterations
-[32m[0128 16:24:30 @base.py:274][0m Start Epoch 1 ...
-[32m[0128 16:24:30 @common.py:816][0m [36mDataFlow Info:[0m
-[32m[0128 16:25:04 @base.py:284][0m Epoch 1 (global_step 468) finished, time:34.8 seconds.
-[32m[0128 16:25:04 @saver.py:77][0m Model saved to train_log/mnist-convnet/model-468.
-[32m[0128 16:25:06 @saver.py:159][0m Model at global_step=468 with maximum val_accuracy=0.98604 saved.
-[32m[0128 16:25:06 @monitor.py:467][0m accuracy: 0.9787
-[32m[0128 16:25:06 @monitor.py:467][0m cross_entropy_loss: 0.067693
-[32m[0128 16:25:06 @monitor.py:467][0m lr: 0.001
-[32m[0128 16:25:06 @monitor.py:467][0m param-summary/conv0/W-rms: 0.49526
-[32m[0128 16:25:06 @monitor.py:467][0m param-summary/conv1/W-rms: 0.08596
-[32m[0128 16:25:06 @monitor.py:467][0m param-summary/conv2/W-rms: 0.085651
-[32m[0128 16:25:06 @monitor.py:467][0m param-summary/conv3/W-rms: 0.086384
-[32m[0128 16:25:06 @monitor.py:467][0m param-summary/fc0/W-rms: 0.035783
-[32m[0128 16:25:06 @monitor.py:467][0m param-summary/fc1/W-rms: 0.063931
-[32m[0128 16:25:06 @monitor.py:467][0m regularize_cost_1: 0.0052239
-[32m[0128 16:25:06 @monitor.py:467][0m total_cost: 0.072917
-[32m[0128 16:25:06 @monitor.py:467][0m train_error: 0.0213
-[32m[0128 16:25:06 @monitor.py:467][0m val_accuracy: 0.98604
-[32m[0128 16:25:06 @monitor.py:467][0m val_cross_entropy_loss: 0.039374
-[32m[0128 16:25:06 @base.py:274][0m Start Epoch 2 ...
-[32m[0128 16:25:15 @base.py:292][0m Detected Ctrl-C and exiting main loop.
+[32m[0226 10:08:33 @base.py:208][0m Setup callbacks graph ...
+[32m[0226 10:08:33 @inference_runner.py:149][0m [InferenceRunner] Building tower 'InferenceTower' on device /gpu:0 ...
+[32m[0226 10:08:33 @summary.py:46][0m [MovingAverageSummary] 5 operations in collection 'MOVING_SUMMARY_OPS' will be run with session hooks.
+[32m[0226 10:08:33 @summary.py:93][0m Summarizing collection 'summaries' of size 18.
+[32m[0226 10:08:33 @base.py:229][0m Creating the session ...
+[32m[0226 10:08:34 @base.py:235][0m Initializing the session ...
+[32m[0226 10:08:34 @base.py:242][0m Graph Finalized.
+[32m[0226 10:08:34 @inference_runner.py:96][0m [InferenceRunner] Will eval 40 iterations
+[32m[0226 10:08:34 @base.py:274][0m Start Epoch 1 ...
