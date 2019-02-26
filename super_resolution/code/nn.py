@@ -40,7 +40,7 @@ class Model(ModelDesc):
 
     def build_graph(self, img_depth):
         # b, c, h, w
-        image = tf.reshape(img_depth[:, :, :, :3], [0, 3, 1, 2])
+        image = tf.transpose(img_depth[:, :, :, :3], [0, 3, 1, 2])
         # b, h, w
         original_depth_map = img_depth[:, :, :, 3]
 
@@ -266,6 +266,7 @@ def get_data(input_dir, train_or_test):
         ]
     ds = AugmentImageComponent(ds, augmentors)
     ds = BatchData(ds, BATCH_SIZE, remainder=not is_train)
+    PrintData(ds)
     # if is_train:
     #     ds = PrefetchData(ds, 3, 2)
     return ds
@@ -282,8 +283,8 @@ def get_train_conf(dataset, is_gpu, session_init=None):
         callbacks.append(GPUUtilizationTracker())
     conf = TrainConfig(
         model=Model(),
-        # data=QueueInput(dataset),
-        data=FeedInput(dataset),
+        data=QueueInput(dataset),
+        # data=FeedInput(dataset),
         callbacks=callbacks,
         max_epoch=400,
         steps_per_epoch=STEPS_PER_EPOCH,
@@ -297,6 +298,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', help='path to the NYU data',
                         default='/Users/yee/Desktop/NYUv2')
+    parser.add_argument('--test_data', help='test data speed', action='store_true')
     parser.add_argument('--cpu', help='just for debug', action='store_true')
     parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.')
     parser.add_argument(
@@ -325,10 +327,15 @@ if __name__ == "__main__":
 
         input_dir = args.data
         ds = get_data(input_dir, 'train')
+
+        if args.test_data:
+            ds = PrintData(ds)
+            ds = TestDataSpeed(ds)
+
         conf = get_train_conf(ds, is_gpu, session_init)
 
         if args.cpu:
-            trainer = SimpleTrainer()
+            trainer = NoOpTrainer()
         else:
             trainer = SyncMultiGPUTrainerReplicated(max(get_num_gpu(), 1))
         launch_train_with_config(conf, trainer)
